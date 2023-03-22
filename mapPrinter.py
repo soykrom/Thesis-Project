@@ -1,22 +1,30 @@
 import json
+import matplotlib.pyplot as plt
 
 with open('data.json', 'r') as f:
     data = json.load(f)
 
-rows = []
-for row in data:
-	values = str(row.values())
-	values = values.split('{', 1)[1]
-	values = '{' + values.split('\'')[0]
+positions = []
+for i in range(len(data)):
+	positions.append([data[i]["telemetry"]["positionX"], data[i]["telemetry"]["positionZ"]])
 
-	rows.append(values)
-        
-with open('data_fixed.json', 'w') as f:
-    # write the dictionary to JSON
-    json.dump(rows, f)
-    
-f = open('data_fixed.json')
+print(positions[0], positions[999])
 
-data = json.load(f)
+x = [point[0] for point in positions]
+y = [point[1] for point in positions]
 
-print(data[0])
+# Create a figure and axis object
+fig, ax = plt.subplots()
+
+# Plot the data as a scatter plot
+ax.scatter(x, y)
+
+# Remove the x and y axis labels
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+
+# Remove the x and y axis ticks
+ax.tick_params(axis='both', which='both', length=0)
+
+# Show the plot
+plt.show()

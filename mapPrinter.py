@@ -5,18 +5,21 @@ with open('data.json', 'r') as f:
     data = json.load(f)
 
 positions = []
+directions = []
 for i in range(len(data)):
 	positions.append([data[i]["telemetry"]["positionX"], data[i]["telemetry"]["positionZ"]])
-
-print(positions[0], positions[999])
+	directions.append([data[i]["telemetry"]["originOneX"], data[i]["telemetry"]["originOneZ"]])
 
 x = [point[0] for point in positions]
 y = [point[1] for point in positions]
+u = [point[0] for point in directions]
+v = [point[1] for point in directions]
 
 # Create a figure and axis object
 fig, ax = plt.subplots()
 
 # Plot the data as a scatter plot
+ax.quiver(x, y, u, v, angles='xy', scale_units='xy', scale=50)
 ax.scatter(x, y)
 
 # Remove the x and y axis labels

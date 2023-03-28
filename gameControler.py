@@ -3,7 +3,7 @@
 # Based on https://github.com/maxofbritton/pyvjoy
 
 
-#import pyvjoy
+import pyvjoy
 import win32event
 import mmap
 import os
@@ -14,8 +14,9 @@ from simple_pid import PID
 pid = PID(0.05, 0, 0.05, setpoint=1)
 
 # Setting up vJoy interface
-#j = pyvjoy.VJoyDevice(1)
-#j.data
+j = pyvjoy.VJoyDevice(1)
+
+pid = PID(0.1, 0.01, 0.05, setpoint=0)
 
 # Setting up rFactor2 plugin reader
 telemetryH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0 , "WriteEventCarData")
@@ -45,9 +46,18 @@ while True:
 		# Angle
 		oriX = float(data[3])
 		# oriY = float(data[4])
-		#oriZ = float(data[5])
+		# oriZ = float(data[5])
+		
+		error = [posX, posZ] # - centerline
+		control_x = error[0]
+		control_y = error[1]
 
-		print(data)
+		# Apply control
+		j.set_axis(pyvjoy.HID_USAGE_X, int(16834 + control_x))		
+		j.set_axis(pyvjoy.HID_USAGE_Y, int(16834 + control_y))		
+		j.update()
+  
+		# print(data)
 		win32event.ResetEvent(telemetryH)
 
 	elif(eventResult == win32event.WAIT_OBJECT_0+1):
@@ -58,7 +68,7 @@ while True:
 
 		lapDist = float(data[0])
 		pathLateral = float(data[1])
-		trackEdge = float(data[2])
+		# trackEdge = float(data[2])
 		
 		win32event.ResetEvent(vehicleScoringH)
 
@@ -77,6 +87,14 @@ while True:
 	
 
 exit()
+
+
+
+
+
+
+
+
 
 # Main loop
 while True:

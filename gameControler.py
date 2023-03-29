@@ -6,17 +6,20 @@
 import pyvjoy
 import win32event
 import mmap
+import time
 import os
 import marshal
 import struct
 from simple_pid import PID
 
-pid = PID(0.05, 0, 0.05, setpoint=1)
+# Proportional - Response to changes in error
+# Integral - Response to overtime and persistent errors
+# Derivative - Response to sudden changes 
+pid = PID(0.05, 0, 0.05, setpoint=0)
 
 # Setting up vJoy interface
 j = pyvjoy.VJoyDevice(1)
 
-pid = PID(0.1, 0.01, 0.05, setpoint=0)
 
 # Setting up rFactor2 plugin reader
 telemetryH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0 , "WriteEventCarData")
@@ -28,6 +31,28 @@ vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", 
 #scoringH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0 , "WriteEventScoringData")
 #scoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileMappingScoringData", access=mmap.ACCESS_READ)
 
+def calculateSteeringControl(pathLateral):
+	error = pid(pathLateral)
+	print(error)
+ 
+	steeringControl = 16384 - float(error) * 16384
+	return steeringControl
+ 
+def applySteeringControl(steeringControl):
+	# Apply control
+	j.data.wAxisX = int(steeringControl)
+	j.update()
+
+# Reward Calculation and Weight updating
+# def calculateReward(state):
+#     return state / 5
+# 
+# def updateWeights(reward):
+#     proportional += 0.01 * reward
+#     integral += 0.001 * reward
+#     derivative += 0.0001 * reward
+#     
+#     pid.tunings(proportional, integral, derivative)
 
 # Main loop
 while True:
@@ -37,7 +62,7 @@ while True:
 		#print("received telemetry data")
 		data = telemetryMMfile.read().decode("utf-8").replace("\n", "").split(',')
 		telemetryMMfile.seek(0)
-
+  
 		# Position
 		posX = float(data[0])
 		posY = float(data[1])
@@ -48,15 +73,7 @@ while True:
 		# oriY = float(data[4])
 		# oriZ = float(data[5])
 		
-		error = [posX, posZ] # - centerline
-		control_x = error[0]
-		control_y = error[1]
 
-		# Apply control
-		j.set_axis(pyvjoy.HID_USAGE_X, int(16834 + control_x))		
-		j.set_axis(pyvjoy.HID_USAGE_Y, int(16834 + control_y))		
-		j.update()
-  
 		# print(data)
 		win32event.ResetEvent(telemetryH)
 
@@ -70,7 +87,14 @@ while True:
 		pathLateral = float(data[1])
 		# trackEdge = float(data[2])
 		
+		steeringControl = calculateSteeringControl(pathLateral)
+
+		applySteeringControl(steeringControl)
+  
+		time.sleep(0.01)
 		win32event.ResetEvent(vehicleScoringH)
+  
+	
 
 	#elif(eventResult == win32event.WAIT_OBJECT_0+2):
 	#	#print("received scoring data")

@@ -8,7 +8,9 @@ positions = []
 directions = []
 for i in range(len(data)):
 	positions.append([data[i]["telemetry"]["positionX"], data[i]["telemetry"]["positionZ"]])
-	directions.append([data[i]["telemetry"]["originOneX"], data[i]["telemetry"]["originOneZ"]])
+        
+for value in data[0]["telemetry"]:
+      print(value)
 
 x = [point[0] for point in positions]
 y = [point[1] for point in positions]

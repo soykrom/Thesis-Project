@@ -9,19 +9,39 @@ import json
 import numpy
 import mmap
 import time
+from sklearn import gaussian_process as gp
 import os
 import marshal
 import struct
 from simple_pid import PID
+import datetime
 
 # Proportional - Response to changes in error
 # Integral - Response to overtime and persistent errors
 # Derivative - Response to sudden changes 
-pidSteering = PID(0.06, 0, 0.05, setpoint=0)
+pidSteering = PID(0.05, 0, 0.05, setpoint=0)
 pidThrottle = PID(0.05, 0, 0.05)
 
 #scoringH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0 , "WriteEventScoringData")
 #scoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileMappingScoringData", access=mmap.ACCESS_READ)
+
+def predict(lapDist, positions):
+	epoch_time = time.time()
+	gaussianProcess = gp.GaussianProcessRegressor(kernel=gp.kernels.RBF())
+	datetime_obj = datetime.datetime.fromtimestamp(epoch_time)
+
+	# Print the current time in a human-readable format
+	print("Current time: {}".format(datetime_obj.strftime('%Y-%m-%d %H:%M:%S')))
+	gaussianProcess.fit(lapDist.reshape(-1, 1), positions)
+	datetime_obj = datetime.datetime.fromtimestamp(epoch_time)
+
+	# Print the current time in a human-readable format
+	print("Current time: {}".format(datetime_obj.strftime('%Y-%m-%d %H:%M:%S')))
+	# Evenly spaced points every half a meter
+	interpolatedValues = numpy.linspace(0, numpy.max(lapDist), int(numpy.max(lapDist) * 0.5))
+	posPredict = gaussianProcess.predict(interpolatedValues.reshape(-1, 1))
+
+	print(f"{len(posPredict)}")
 
 def getTrajectory():
 	with open('data.json', 'r') as f:
@@ -33,12 +53,11 @@ def getTrajectory():
 		lapDist.append(data[i]["carScoring"]["currentLapDist"])
 		positions.append([data[i]["telemetry"]["positionX"], data[i]["telemetry"]["positionZ"]])
 
-	# Removing duplicates from positions and obtain the indices from the unique elements
-	positions, uniqueIndexes = numpy.unique(positions, return_index=True, axis=0)
+	return numpy.array(lapDist), numpy.array(positions)
 
-	# Pruning lapDist array by selecting the elements corresponding to the unique indices obtained
-	lapDist = numpy.array(lapDist)[uniqueIndexes]
-	
+def calculatePathLateral(currentPosition, trajectoryPosition):
+	return numpy.linalg.norm(trajectoryPosition - currentPosition)
+
 
 def calculateControl(vJoyDevice, pathLateral, lapDist):
 	errorSteering = pidSteering(pathLateral)
@@ -85,8 +104,8 @@ def doMainLoop():
 
 	timer = time.time()	
 	
-	oldLapDist = 0
-	distanceToTrajectory = 0
+	lapDist, positions = getTrajectory()
+	currentLapDist = 0
 	while True:
 		eventResult = win32event.WaitForMultipleObjects([telemetryH, vehicleScoringH], False , win32event.INFINITE)
 		if(eventResult == win32event.WAIT_OBJECT_0):
@@ -96,36 +115,28 @@ def doMainLoop():
 	
 			# Position
 			posX = float(data[0])
-			posY = float(data[1])
 			posZ = float(data[2])
 
-			# Angle
-			oriX = float(data[3])
-			# oriY = float(data[4])
-			# oriZ = float(data[5])
+			pathLateral = calculatePathLateral([posX, posZ], positions[numpy.where(lapDist > currentLapDist, numpy.abs(lapDist - currentLapDist), numpy.inf).argmin()])
 
+			calculateControl(vJoyDevice, -pathLateral, currentLapDist)
+
+			time.sleep(0.01)
 			win32event.ResetEvent(telemetryH)
 
+		# CURRENT PROBLEMS:
+		#	1 - Euclidean distance is always positive so it will never turn left.
+		#	2 - It seeing ahead/behind depending on currentLapDist and time to obtain position (in theory intervals should solve this)
+		#	3 - Related to 2, obtaining a predictions vector where it complements the pieces of the previous vector where intervals are bigger than X
+		
 		elif(eventResult == win32event.WAIT_OBJECT_0+1):
 			# Read vehicle scoring data from shared memory
 			data = vehicleScoringMMfile.read().decode("utf-8").replace("\n", "").split(',')
 			vehicleScoringMMfile.seek(0)
-
 			
-			lapDist = float(data[0])
-			pathLateral = float(data[1])
-			# trackEdge = float(data[2])
-			
-			calculateControl(vJoyDevice, pathLateral, lapDist)
-			distanceToTrajectory += pathLateral
+			currentLapDist = float(data[0]) + 1
+			print(currentLapDist)
 
-			if oldLapDist - lapDist > 0:
-				timer, lapTime = calculateReward(timer)
-				minutes, seconds = divmod(lapTime, 60)
-				print(f"Lap Time: {str(int(minutes))}:{str(seconds)}")
-				
-			oldLapDist = lapDist
-			time.sleep(0.01)
 			win32event.ResetEvent(vehicleScoringH)
 
 		else:

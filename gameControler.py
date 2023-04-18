@@ -9,6 +9,7 @@ import json
 import numpy
 import mmap
 import time
+import math
 from sklearn import gaussian_process as gp
 import os
 import marshal
@@ -19,7 +20,7 @@ import datetime
 # Proportional - Response to changes in error
 # Integral - Response to overtime and persistent errors
 # Derivative - Response to sudden changes 
-pidSteering = PID(0.05, 0, 0.05, setpoint=0)
+pidSteering = PID(0.01, 0, 0.05, setpoint=0)
 pidThrottle = PID(0.05, 0, 0.05)
 
 #scoringH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0 , "WriteEventScoringData")
@@ -43,21 +44,36 @@ def predict(lapDist, positions):
 
 	print(f"{len(posPredict)}")
 
-def getTrajectory():
-	with open('data.json', 'r') as f:
-		data = json.load(f)
+def getTrajectory(filename='data.json'):
+	with open(filename, 'r') as file:
+		data = json.load(file)
 
-	lapDist = []
-	positions = []
+	lapDist = numpy.empty(len(data), dtype=numpy.float64)
+	positions = numpy.empty((len(data), 2), dtype=numpy.float64)
 	for i in range(len(data)):
-		lapDist.append(data[i]["carScoring"]["currentLapDist"])
-		positions.append([data[i]["telemetry"]["positionX"], data[i]["telemetry"]["positionZ"]])
+		lapDist[i] = data[i]["carScoring"]["currentLapDist"]
+		positions[i] = [data[i]["telemetry"]["positionX"], data[i]["telemetry"]["positionZ"]]
 
-	return numpy.array(lapDist), numpy.array(positions)
+	# Remove duplicate values based on the positions vector (it keeps far more values)
+	positions, uniqueIndices = numpy.unique(numpy.array(positions), return_index=True, axis=0)
+	lapDist = lapDist[uniqueIndices]
+
+	# Sort both arrays in ascending order of LapDistance
+	sortedIndices = numpy.argsort(lapDist)
+	lapDist = lapDist[sortedIndices]
+	positions = positions[sortedIndices]
+
+	return lapDist, positions
+
 
 def calculatePathLateral(currentPosition, trajectoryPosition):
-	return numpy.linalg.norm(trajectoryPosition - currentPosition)
+	# Distance from current point to desired trajectory point
+	pathLateralDistance = numpy.linalg.norm(currentPosition - trajectoryPosition)
 
+	# Calculate if it's to turn left or right
+	# ???????
+
+	# return pathLateral
 
 def calculateControl(vJoyDevice, pathLateral, lapDist):
 	errorSteering = pidSteering(pathLateral)
@@ -117,9 +133,13 @@ def doMainLoop():
 			posX = float(data[0])
 			posZ = float(data[2])
 
-			pathLateral = calculatePathLateral([posX, posZ], positions[numpy.where(lapDist > currentLapDist, numpy.abs(lapDist - currentLapDist), numpy.inf).argmin()])
+			index = numpy.argmin(numpy.abs(lapDist - currentLapDist))
+			if lapDist[index] < currentLapDist:
+				index += 1
 
-			calculateControl(vJoyDevice, -pathLateral, currentLapDist)
+			pathLateral = calculatePathLateral([posX, posZ], positions[index])
+
+			calculateControl(vJoyDevice, pathLateral, currentLapDist)
 
 			time.sleep(0.01)
 			win32event.ResetEvent(telemetryH)
@@ -134,8 +154,8 @@ def doMainLoop():
 			data = vehicleScoringMMfile.read().decode("utf-8").replace("\n", "").split(',')
 			vehicleScoringMMfile.seek(0)
 			
-			currentLapDist = float(data[0]) + 1
-			print(currentLapDist)
+			currentLapDist = float(data[0])
+			# print(currentLapDist)
 
 			win32event.ResetEvent(vehicleScoringH)
 

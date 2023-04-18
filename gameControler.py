@@ -11,6 +11,7 @@ import mmap
 import time
 import math
 from sklearn import gaussian_process as gp
+from sklearn import preprocessing
 import os
 import marshal
 import struct
@@ -27,22 +28,32 @@ pidThrottle = PID(0.05, 0, 0.05)
 #scoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileMappingScoringData", access=mmap.ACCESS_READ)
 
 def predict(lapDist, positions):
-	epoch_time = time.time()
+
+	# Train the Gaussian Process
 	gaussianProcess = gp.GaussianProcessRegressor(kernel=gp.kernels.RBF())
-	datetime_obj = datetime.datetime.fromtimestamp(epoch_time)
-
-	# Print the current time in a human-readable format
-	print("Current time: {}".format(datetime_obj.strftime('%Y-%m-%d %H:%M:%S')))
 	gaussianProcess.fit(lapDist.reshape(-1, 1), positions)
-	datetime_obj = datetime.datetime.fromtimestamp(epoch_time)
 
-	# Print the current time in a human-readable format
-	print("Current time: {}".format(datetime_obj.strftime('%Y-%m-%d %H:%M:%S')))
-	# Evenly spaced points every half a meter
-	interpolatedValues = numpy.linspace(0, numpy.max(lapDist), int(numpy.max(lapDist) * 0.5))
-	posPredict = gaussianProcess.predict(interpolatedValues.reshape(-1, 1))
+	# Array with points every 0.5 meters.
+	newLapDist = numpy.linspace(lapDist.min(), lapDist.max(), int((lapDist.max() - lapDist.min()) // 0.5))
 
-	print(f"{len(posPredict)}")
+	# Predict the positions
+	posPredict, deviation = gaussianProcess.predict(newLapDist.reshape(-1, 1), return_std=True)
+
+
+	sortedIndices = numpy.argsort(newLapDist)
+	newLapDist = newLapDist[sortedIndices]
+	posPredict = posPredict[sortedIndices]
+
+	testLapDist = lapDist[3452]
+	testPosition = positions[3452]
+
+	index = numpy.argmin(numpy.abs(newLapDist - testLapDist))
+	predictedLapDist = newLapDist[index]
+	predictedPosition = posPredict[index]
+
+	print("Standard Deviation: ", deviation)
+	print(f"""TestLapDist: {testLapDist}\tTestPosition: {testPosition}
+       PredictedLapDist: {predictedLapDist}\tPredictedPositon: {predictedPosition}""")
 
 def getTrajectory(filename='data.json'):
 	with open(filename, 'r') as file:
@@ -63,7 +74,7 @@ def getTrajectory(filename='data.json'):
 	lapDist = lapDist[sortedIndices]
 	positions = positions[sortedIndices]
 
-	return lapDist, positions
+	predict(lapDist, positions)
 
 
 def calculatePathLateral(currentPosition, trajectoryPosition):

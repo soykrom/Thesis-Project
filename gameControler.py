@@ -7,11 +7,13 @@ import json
 import mmap
 import time
 
+import pickle
 import numpy
 import pyvjoy
 import win32event
 from simple_pid import PID
 from sklearn import gaussian_process as gp
+from sklearn import preprocessing
 
 # Proportional - Response to changes in error
 # Integral - Response to overtime and persistent errors
@@ -24,58 +26,60 @@ pidThrottle = PID(0.05, 0, 0.05)
 # scoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileMappingScoringData", access=mmap.ACCESS_READ)
 
 def predict_position(gp_model, current_lap_dist):
-    pos_predict = gp_model.predict([[current_lap_dist]])
-    return pos_predict
+    current_lap_dist = numpy.array(current_lap_dist).reshape(-1, 1)
+    scaler = preprocessing.MinMaxScaler().fit(current_lap_dist)
+    lap_dist_scaled = scaler.transform(current_lap_dist)
+
+    pos_predict = gp_model.predict(lap_dist_scaled)
+    return numpy.array(pos_predict)
 
 
-def get_gaussian_process_regressor(lap_dist, positions):
+def train_gpr_model(filename='gpr_model.pkl'):
+    lap_dist, positions = get_trajectory()
+
+    # Pre process data
+    lap_dist = lap_dist.reshape(-1, 1)
+    scaler = preprocessing.MinMaxScaler().fit(lap_dist)
+    lap_dist_scaled = scaler.transform(lap_dist)
+
     # Train the Gaussian Process
-    gpr_model = gp.GaussianProcessRegressor(kernel=gp.kernels.RBF(length_scale=1, length_scale_bounds=(1e-2, 1e2)))
-    gpr_model.fit(lap_dist.reshape(-1, 1), positions)
+    print("Beginning training of gaussian process model")
+    kernel = gp.kernels.RBF(length_scale=1.0)
+    gpr_model = gp.GaussianProcessRegressor(kernel=kernel, alpha=1e-4, n_restarts_optimizer=10, random_state=0)
+    gpr_model.fit(lap_dist_scaled, positions)
+    print("Training Done")
 
+    with open(filename, 'wb') as f:
+        pickle.dump(gpr_model, f)
+
+
+def get_grp_model(filename='gpr_model.pkl'):
+    with open(filename, 'rb') as f:
+        gpr_model = pickle.load(f)
     return gpr_model
 
-
-# Array with points every 0.5 meters.
-# newLapDist = numpy.linspace(lapDist.min(), lapDist.max(), int((lapDist.max() - lapDist.min()) // 0.5))
-
-# Predict the positions
-# posPredict, deviation = gaussianProcess.predict(newLapDist.reshape(-1, 1), return_std=True)
-
-# sortedIndices = numpy.argsort(newLapDist)
-# newLapDist = newLapDist[sortedIndices]
-# posPredict = posPredict[sortedIndices]
-
-# testLapDist = lapDist[3452]
-# testPosition = positions[3452]
-
-# index = numpy.argmin(numpy.abs(newLapDist - testLapDist))
-# predictedLapDist = newLapDist[index]
-# predictedPosition = posPredict[index]
-
-# print("Standard Deviation: ", deviation)
-# print(f"""TestLapDist: {testLapDist}\tTestPosition: {testPosition}
-#    PredictedLapDist: {predictedLapDist}\tPredictedPosition: {predictedPosition}""")
 
 def get_trajectory(filename='data.json'):
     with open(filename, 'r') as file:
         data = json.load(file)
 
-    lap_dist = numpy.empty(len(data), dtype=numpy.float16)
-    positions = numpy.empty((len(data), 2), dtype=numpy.float16)
+    lap_dist = numpy.empty(len(data), dtype=numpy.float32)
+    positions = numpy.empty((len(data), 2), dtype=numpy.float32)
     for i in range(len(data)):
         lap_dist[i] = data[i]["carScoring"]["currentLapDist"]
         positions[i] = [data[i]["telemetry"]["positionX"], data[i]["telemetry"]["positionZ"]]
 
     # Remove duplicate values based on the positions vector (it keeps far more values)
-    # positions, uniqueIndices = numpy.unique(numpy.array(positions), return_index=True, axis=0)
-    # lapDist = lapDist[uniqueIndices]
-    #
-    # # Sort both arrays in ascending order of LapDistance
-    # sortedIndices = numpy.argsort(lapDist)
-    # lapDist = lapDist[sortedIndices]
-    # positions = positions[sortedIndices]
-
+#    positions, unique_indices = numpy.unique(numpy.array(positions), return_index=True, axis=0)
+#    lap_dist = lap_dist[unique_indices]
+#
+#    # Sort both arrays in ascending order of LapDistance
+#    sorted_indices = numpy.argsort(lap_dist)
+#    lap_dist = lap_dist[sorted_indices]
+#    positions = positions[sorted_indices]
+#
+#    print(len(lap_dist))
+#    print(len(positions))
     return lap_dist, positions
 
 
@@ -83,13 +87,12 @@ def calculate_path_lateral(current_position, trajectory_position):
     # Distance from current point to desired trajectory point
     path_lateral_distance = numpy.linalg.norm(current_position - trajectory_position)
 
+    # Calculate if it's to turn left or right
+    # ???????
+    # Profit
+
     return path_lateral_distance
 
-
-# Calculate if it's to turn left or right
-# ???????
-
-# return pathLateral
 
 def calculate_control(vjoy_device, path_lateral, lap_dist):
     error_steering = pidSteering(path_lateral)
@@ -142,9 +145,8 @@ def do_main_loop():
 
     lap_dist, positions = get_trajectory()
     current_lap_dist = lap_dist[0]
-    print("Beginning training of gaussian process model")
-    gp_model = get_gaussian_process_regressor(lap_dist, positions)
-    print("Training Done")
+    gp_model = get_grp_model()
+
     user_input = input("Press Enter to continue")
     while user_input != "":
         user_input = input("Press Enter to continue")
@@ -158,7 +160,7 @@ def do_main_loop():
             telemetry_m_mfile.seek(0)
 
             # Position
-            position = [float(data[0]), float(data[2])]
+            position = numpy.array([float(data[0]), float(data[2])])
 
             index = numpy.argmin(numpy.abs(lap_dist - current_lap_dist))
             if lap_dist[index] < current_lap_dist:

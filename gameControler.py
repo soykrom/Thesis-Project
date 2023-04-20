@@ -25,26 +25,36 @@ pidThrottle = PID(0.05, 0, 0.05)
 # scoringH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0 , "WriteEventScoringData")
 # scoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileMappingScoringData", access=mmap.ACCESS_READ)
 
-def predict_position(gp_model, current_lap_dist):
-    current_lap_dist = numpy.array(current_lap_dist).reshape(-1, 1)
-    scaler = preprocessing.MinMaxScaler().fit(current_lap_dist)
-    lap_dist_scaled = scaler.transform(current_lap_dist)
+def predict_position(gpr_model, current_lap_dist, scaler):
 
-    pos_predict = gp_model.predict(lap_dist_scaled)
+    current_lap_dist = numpy.array(current_lap_dist).reshape(-1, 1)
+    print("Current: ", current_lap_dist)
+
+    lap_dist_scaled = scaler.transform(current_lap_dist)
+#    lap_dist_min = numpy.percentile(lap_dist, 1)
+#    lap_dist_max = numpy.percentile(lap_dist, 99)
+
+#    print(f"Min: {lap_dist_min}\tMax: {lap_dist_max}")
+
+#    lap_dist_scaled = (current_lap_dist - lap_dist_min) / (lap_dist_max - lap_dist_min)
+    print("Scaled: ", lap_dist_scaled)
+
+    pos_predict = gpr_model.predict(lap_dist_scaled)
     return numpy.array(pos_predict)
 
 
 def train_gpr_model(filename='gpr_model.pkl'):
-    lap_dist, positions = get_trajectory()
+    lap_dist, positions, scaler = get_trajectory()
 
-    # Pre process data
-    lap_dist = lap_dist.reshape(-1, 1)
-    scaler = preprocessing.MinMaxScaler().fit(lap_dist)
     lap_dist_scaled = scaler.transform(lap_dist)
+
+#    lap_dist_min = numpy.percentile(lap_dist, 1)
+#    lap_dist_max = numpy.percentile(lap_dist, 99)
+#    lap_dist_scaled = (lap_dist - lap_dist_min) / (lap_dist_max - lap_dist_min)
 
     # Train the Gaussian Process
     print("Beginning training of gaussian process model")
-    kernel = gp.kernels.RBF(length_scale=1.0)
+    kernel = gp.kernels.Matern(length_scale=0.5)
     gpr_model = gp.GaussianProcessRegressor(kernel=kernel, alpha=1e-4, n_restarts_optimizer=10, random_state=0)
     gpr_model.fit(lap_dist_scaled, positions)
     print("Training Done")
@@ -69,6 +79,9 @@ def get_trajectory(filename='data.json'):
         lap_dist[i] = data[i]["carScoring"]["currentLapDist"]
         positions[i] = [data[i]["telemetry"]["positionX"], data[i]["telemetry"]["positionZ"]]
 
+    # Pre process data
+    lap_dist = lap_dist.reshape(-1, 1)
+    scaler = preprocessing.StandardScaler().fit(lap_dist)
     # Remove duplicate values based on the positions vector (it keeps far more values)
 #    positions, unique_indices = numpy.unique(numpy.array(positions), return_index=True, axis=0)
 #    lap_dist = lap_dist[unique_indices]
@@ -80,7 +93,7 @@ def get_trajectory(filename='data.json'):
 #
 #    print(len(lap_dist))
 #    print(len(positions))
-    return lap_dist, positions
+    return lap_dist, positions, scaler
 
 
 def calculate_path_lateral(current_position, trajectory_position):
@@ -130,6 +143,17 @@ def calculate_reward(start_time):
 
 # Main loop
 def do_main_loop():
+    print("Getting trajectory and scaler")
+    lap_dist, positions, scaler = get_trajectory()
+    current_lap_dist = lap_dist[0]
+
+    print("Getting gpr_model")
+    gp_model = get_grp_model()
+
+    user_input = input("Press Enter to continue")
+    while user_input != "":
+        user_input = input("Press Enter to continue")
+
     print("Setting up vJoy and rFactor2 plugin")
     # Setting up vJoy interface
     vjoy_device = pyvjoy.VJoyDevice(1)
@@ -140,16 +164,6 @@ def do_main_loop():
 
     vehicle_scoring_h = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0, "WriteVehicleScoring")
     vehicle_scoring_m_mfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", access=mmap.ACCESS_READ)
-
-    # timer = time.time()
-
-    lap_dist, positions = get_trajectory()
-    current_lap_dist = lap_dist[0]
-    gp_model = get_grp_model()
-
-    user_input = input("Press Enter to continue")
-    while user_input != "":
-        user_input = input("Press Enter to continue")
 
     print("Entering Main Loop")
     while True:
@@ -166,7 +180,7 @@ def do_main_loop():
             if lap_dist[index] < current_lap_dist:
                 index += 1
 
-            pos_predict = predict_position(gp_model, current_lap_dist)
+            pos_predict = predict_position(gp_model, current_lap_dist, scaler)
 
             print(f"""Test Lap Dist: {lap_dist[index]}\tTest Position: {positions[index]}
             Current Lap Dist: {current_lap_dist}\tPredicted Positions: {pos_predict}""")

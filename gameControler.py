@@ -31,12 +31,7 @@ def predict_position(gpr_model, current_lap_dist, scaler):
     print("Current: ", current_lap_dist)
 
     lap_dist_scaled = scaler.transform(current_lap_dist)
-#    lap_dist_min = numpy.percentile(lap_dist, 1)
-#    lap_dist_max = numpy.percentile(lap_dist, 99)
 
-#    print(f"Min: {lap_dist_min}\tMax: {lap_dist_max}")
-
-#    lap_dist_scaled = (current_lap_dist - lap_dist_min) / (lap_dist_max - lap_dist_min)
     print("Scaled: ", lap_dist_scaled)
 
     pos_predict = gpr_model.predict(lap_dist_scaled)
@@ -47,10 +42,6 @@ def train_gpr_model(filename='gpr_model.pkl'):
     lap_dist, positions, scaler = get_trajectory()
 
     lap_dist_scaled = scaler.transform(lap_dist)
-
-#    lap_dist_min = numpy.percentile(lap_dist, 1)
-#    lap_dist_max = numpy.percentile(lap_dist, 99)
-#    lap_dist_scaled = (lap_dist - lap_dist_min) / (lap_dist_max - lap_dist_min)
 
     # Train the Gaussian Process
     print("Beginning training of gaussian process model")
@@ -82,17 +73,7 @@ def get_trajectory(filename='data.json'):
     # Pre process data
     lap_dist = lap_dist.reshape(-1, 1)
     scaler = preprocessing.StandardScaler().fit(lap_dist)
-    # Remove duplicate values based on the positions vector (it keeps far more values)
-#    positions, unique_indices = numpy.unique(numpy.array(positions), return_index=True, axis=0)
-#    lap_dist = lap_dist[unique_indices]
-#
-#    # Sort both arrays in ascending order of LapDistance
-#    sorted_indices = numpy.argsort(lap_dist)
-#    lap_dist = lap_dist[sorted_indices]
-#    positions = positions[sorted_indices]
-#
-#    print(len(lap_dist))
-#    print(len(positions))
+
     return lap_dist, positions, scaler
 
 
@@ -133,13 +114,6 @@ def calculate_reward(start_time):
 
     return timer, time.time() - start_time
 
-
-# def updateWeights(reward):
-#     proportional += 0.01 * reward
-#     integral += 0.001 * reward
-#     derivative += 0.0001 * reward
-#     
-#     pid.tunings(proportional, integral, derivative)
 
 # Main loop
 def do_main_loop():

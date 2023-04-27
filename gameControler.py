@@ -6,9 +6,12 @@
 import json
 import mmap
 import time
-
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from IPython import display
 import pickle
 import numpy
+import math
 import pyvjoy
 import win32event
 from simple_pid import PID
@@ -18,55 +21,39 @@ from sklearn import preprocessing
 # Proportional - Response to changes in error
 # Integral - Response to overtime and persistent errors
 # Derivative - Response to sudden changes 
-pidSteering = PID(0.01, 0, 0.05, setpoint=0)
-pidThrottle = PID(0.05, 0, 0.05)
+pidSteering = PID(0.05, 0, 0, setpoint=0)
+pidThrottle = PID(0.05, 0, 0.05, setpoint=20)
 
 
 # scoringH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0 , "WriteEventScoringData")
 # scoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileMappingScoringData", access=mmap.ACCESS_READ)
 
-def predict_position(gpr_model, current_lap_dist, scaler):
+def test(gpr_model, scaler, lap_dist, positions):
+    k = 0.2
+    max_value = numpy.max(lap_dist)
 
-    current_lap_dist = numpy.array(current_lap_dist).reshape(-1, 1)
-    print("Current: ", current_lap_dist)
+    points = numpy.arange(0, max_value, k).reshape(-1, 1)
+    points_scaled = scaler.transform(points)
 
-    lap_dist_scaled = scaler.transform(current_lap_dist)
-#    lap_dist_min = numpy.percentile(lap_dist, 1)
-#    lap_dist_max = numpy.percentile(lap_dist, 99)
+    predicted_positions = gpr_model.predict(points_scaled)
 
-#    print(f"Min: {lap_dist_min}\tMax: {lap_dist_max}")
+    # Create a new figure
+    fig, ax = plt.subplots()
 
-#    lap_dist_scaled = (current_lap_dist - lap_dist_min) / (lap_dist_max - lap_dist_min)
-    print("Scaled: ", lap_dist_scaled)
+    # Plot the values
+    x, y = zip(*predicted_positions)
+    ax.plot(x, y, color='red')
 
-    pos_predict = gpr_model.predict(lap_dist_scaled)
-    return numpy.array(pos_predict)
+    x, y = zip(*positions)
+    ax.plot(x, y, color='blue')
 
+    # Hide the axis
+    ax.axis('off')
 
-def train_gpr_model(filename='gpr_model.pkl'):
-    lap_dist, positions, scaler = get_trajectory()
+    # Display the plot
+    plt.show()
 
-    lap_dist_scaled = scaler.transform(lap_dist)
-
-#    lap_dist_min = numpy.percentile(lap_dist, 1)
-#    lap_dist_max = numpy.percentile(lap_dist, 99)
-#    lap_dist_scaled = (lap_dist - lap_dist_min) / (lap_dist_max - lap_dist_min)
-
-    # Train the Gaussian Process
-    print("Beginning training of gaussian process model")
-    kernel = gp.kernels.Matern(length_scale=0.5)
-    gpr_model = gp.GaussianProcessRegressor(kernel=kernel, alpha=1e-4, n_restarts_optimizer=10, random_state=0)
-    gpr_model.fit(lap_dist_scaled, positions)
-    print("Training Done")
-
-    with open(filename, 'wb') as f:
-        pickle.dump(gpr_model, f)
-
-
-def get_grp_model(filename='gpr_model.pkl'):
-    with open(filename, 'rb') as f:
-        gpr_model = pickle.load(f)
-    return gpr_model
+    return
 
 
 def get_trajectory(filename='data.json'):
@@ -82,38 +69,74 @@ def get_trajectory(filename='data.json'):
     # Pre process data
     lap_dist = lap_dist.reshape(-1, 1)
     scaler = preprocessing.StandardScaler().fit(lap_dist)
-    # Remove duplicate values based on the positions vector (it keeps far more values)
-#    positions, unique_indices = numpy.unique(numpy.array(positions), return_index=True, axis=0)
-#    lap_dist = lap_dist[unique_indices]
-#
-#    # Sort both arrays in ascending order of LapDistance
-#    sorted_indices = numpy.argsort(lap_dist)
-#    lap_dist = lap_dist[sorted_indices]
-#    positions = positions[sorted_indices]
-#
-#    print(len(lap_dist))
-#    print(len(positions))
+
     return lap_dist, positions, scaler
 
 
-def calculate_path_lateral(current_position, trajectory_position):
-    # Distance from current point to desired trajectory point
-    path_lateral_distance = numpy.linalg.norm(current_position - trajectory_position)
-
-    # Calculate if it's to turn left or right
-    # ???????
-    # Profit
-
-    return path_lateral_distance
+def get_grp_model(filename='gpr_model.pkl'):
+    with open(filename, 'rb') as f:
+        gpr_model = pickle.load(f)
+    return gpr_model
 
 
-def calculate_control(vjoy_device, path_lateral, lap_dist):
-    error_steering = pidSteering(path_lateral)
+def train_gpr_model(filename='gpr_model.pkl'):
+    lap_dist, positions, scaler = get_trajectory()
 
-    pidThrottle.setpoint = lap_dist + 20
-    error_throttle = pidThrottle(lap_dist)
+    lap_dist_scaled = scaler.transform(lap_dist)
 
-    steering_control = 16384 - float(error_steering) * 16384
+    # Train the Gaussian Process
+    print("Beginning training of gaussian process model")
+    kernel = gp.kernels.Matern(length_scale=0.5)
+    gpr_model = gp.GaussianProcessRegressor(kernel=kernel, alpha=1e-4, n_restarts_optimizer=10, random_state=0)
+    gpr_model.fit(lap_dist_scaled, positions)
+    print("Training Done")
+
+    with open(filename, 'wb') as f:
+        pickle.dump(gpr_model, f)
+
+
+def predict_position(gpr_model, scaler, lap_dist):
+    lap_dist = numpy.array(lap_dist).reshape(-1, 1)
+
+    lap_dist_scaled = scaler.transform(lap_dist)
+
+    pos_predict = gpr_model.predict(lap_dist_scaled)
+
+    return numpy.array(pos_predict)
+
+
+def calculate_look_ahead(current_velocity=60):
+    constant = 0.1
+
+    # Get look ahead distance
+    look_ahead = constant * current_velocity
+
+    return look_ahead
+
+
+def calculate_steering_angle(current_position, target_point, look_ahead):
+    car_length = 2.85
+
+    # Axis distance from current position to the target point and angle
+    tp_x = target_point[0] - current_position[0]
+    tp_z = target_point[1] - current_position[1]
+    alpha = math.atan2(tp_z, tp_x)
+
+    steering_angle = math.atan2(2 * car_length * math.sin(alpha), look_ahead)
+    print(f"Desired Angle: {math.degrees(steering_angle)}")
+
+    return steering_angle
+
+
+def calculate_control(vjoy_device, delta_angle, sign, current_lap_dist):
+    error_steering = sign * pidSteering(delta_angle)
+    print(f"Error: {error_steering}")
+
+    error_throttle = pidThrottle(current_lap_dist)
+
+    steering_control = 16384 + float(error_steering) * 16384
+    print(f"Steering control: {steering_control}")
+
     throttle_control = 16384 + float(error_throttle) * 16384
 
     apply_control(vjoy_device, steering_control, throttle_control)
@@ -127,28 +150,17 @@ def apply_control(vjoy_device, steering_control, throttle_control):
     vjoy_device.update()
 
 
-# Reward Calculation and Weight updating
-def calculate_reward(start_time):
-    timer = time.time()
-
-    return timer, time.time() - start_time
-
-
-# def updateWeights(reward):
-#     proportional += 0.01 * reward
-#     integral += 0.001 * reward
-#     derivative += 0.0001 * reward
-#     
-#     pid.tunings(proportional, integral, derivative)
-
 # Main loop
-def do_main_loop():
+def do_main_loop(flag=0):
     print("Getting trajectory and scaler")
     lap_dist, positions, scaler = get_trajectory()
     current_lap_dist = lap_dist[0]
 
     print("Getting gpr_model")
-    gp_model = get_grp_model()
+    gpr_model = get_grp_model()
+
+    if flag == 1:
+        test(gpr_model, scaler, lap_dist, positions)
 
     user_input = input("Press Enter to continue")
     while user_input != "":
@@ -174,28 +186,34 @@ def do_main_loop():
             telemetry_m_mfile.seek(0)
 
             # Position
-            position = numpy.array([float(data[0]), float(data[2])])
+            current_position = numpy.array([float(data[0]), float(data[2])])
 
-            index = numpy.argmin(numpy.abs(lap_dist - current_lap_dist))
-            if lap_dist[index] < current_lap_dist:
-                index += 1
+            # Current Angle
+            ori_z = float(data[5].rstrip('\x00'))
+            print(f"\n\nOriZ: {ori_z}")
 
-            pos_predict = predict_position(gp_model, current_lap_dist, scaler)
+            current_angle = (ori_z + math.pi) % (2 * math.pi)
+            if current_angle > math.pi:
+                current_angle -= 2 * math.pi
 
-            print(f"""Test Lap Dist: {lap_dist[index]}\tTest Position: {positions[index]}
-            Current Lap Dist: {current_lap_dist}\tPredicted Positions: {pos_predict}""")
+            look_ahead = calculate_look_ahead()  # FIX TO CURRENT_VELOCITY
 
-            path_lateral = calculate_path_lateral(position, pos_predict)
+            target_point = predict_position(gpr_model, scaler, current_lap_dist + look_ahead)
+            desired_angle = calculate_steering_angle(current_position, target_point[0], look_ahead)
+            delta = desired_angle - current_angle
 
-            calculate_control(vjoy_device, path_lateral, current_lap_dist)
+            sign = +1 if delta > 0 else -1
+            print(f"""Current Angle: {math.degrees(current_angle)}\nDelta: {math.degrees(delta)}""")
+
+            print(f"""Current Lap Dist: {current_lap_dist}\tCurrent Position: {predict_position(gpr_model, scaler, current_lap_dist)[0]}
+            Lookahead Lap Dist: {current_lap_dist + look_ahead}\tPredicted Positions: {target_point[0]}""")
+
+            calculate_control(vjoy_device, delta, sign, current_lap_dist)
 
             time.sleep(1)
             win32event.ResetEvent(telemetry_h)
 
-        # CURRENT PROBLEMS: 1 - Euclidean distance is always positive, so it will never turn left. 2 - It seeing
-        # ahead/behind depending on currentLapDist and time to obtain position (in theory intervals should solve
-        # this) 3 - Related to 2, obtaining a predictions vector where it complements the pieces of the previous
-        # vector where intervals are bigger than X
+        # CURRENT PROBLEMS: 1 - Euclidean distance is always positive, so it will never turn left.
 
         elif event_result == win32event.WAIT_OBJECT_0 + 1:
             # Read vehicle scoring data from shared memory

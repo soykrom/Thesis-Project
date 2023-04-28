@@ -7,8 +7,6 @@ import json
 import mmap
 import time
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from IPython import display
 import pickle
 import numpy
 import math
@@ -21,7 +19,7 @@ from sklearn import preprocessing
 # Proportional - Response to changes in error
 # Integral - Response to overtime and persistent errors
 # Derivative - Response to sudden changes 
-pidSteering = PID(0.05, 0, 0, setpoint=0)
+pidSteering = PID(0.3, 0, 0, setpoint=0)
 pidThrottle = PID(0.05, 0, 0.05, setpoint=20)
 
 
@@ -119,23 +117,19 @@ def calculate_steering_angle(current_position, target_point, look_ahead):
 
     # Axis distance from current position to the target point and angle
     tp_x = target_point[0] - current_position[0]
-    tp_z = target_point[1] - current_position[1]
-    alpha = math.atan2(tp_z, tp_x)
 
-    steering_angle = math.atan2(2 * car_length * math.sin(alpha), look_ahead)
-    print(f"Desired Angle: {math.degrees(steering_angle)}")
+    curvature = 2 * tp_x / look_ahead ** 2
 
+    steering_angle = math.atan(car_length * curvature)
     return steering_angle
 
 
-def calculate_control(vjoy_device, delta_angle, sign, current_lap_dist):
-    error_steering = sign * pidSteering(delta_angle)
-    print(f"Error: {error_steering}")
+def calculate_control(vjoy_device, delta_angle, current_lap_dist):
+    error_steering = pidSteering(delta_angle)
 
     error_throttle = pidThrottle(current_lap_dist)
 
-    steering_control = 16384 + float(error_steering) * 16384
-    print(f"Steering control: {steering_control}")
+    steering_control = 16384 - float(error_steering) * 16384
 
     throttle_control = 16384 + float(error_throttle) * 16384
 
@@ -189,31 +183,23 @@ def do_main_loop(flag=0):
             current_position = numpy.array([float(data[0]), float(data[2])])
 
             # Current Angle
-            ori_z = float(data[5].rstrip('\x00'))
-            print(f"\n\nOriZ: {ori_z}")
-
-            current_angle = (ori_z + math.pi) % (2 * math.pi)
-            if current_angle > math.pi:
-                current_angle -= 2 * math.pi
+            current_angle = -float(data[5].rstrip('\x00'))
 
             look_ahead = calculate_look_ahead()  # FIX TO CURRENT_VELOCITY
-
             target_point = predict_position(gpr_model, scaler, current_lap_dist + look_ahead)
+
+            print(f"""Current: {current_lap_dist}\t{predict_position(gpr_model, scaler, current_lap_dist)[0]}
+            Lookahead: {current_lap_dist + look_ahead}\t{target_point[0]}""")
+
             desired_angle = calculate_steering_angle(current_position, target_point[0], look_ahead)
             delta = desired_angle - current_angle
 
-            sign = +1 if delta > 0 else -1
-            print(f"""Current Angle: {math.degrees(current_angle)}\nDelta: {math.degrees(delta)}""")
+            print(f"""Current: {math.degrees(current_angle)}\tDesired: {math.degrees(desired_angle)}
+            Delta: {math.degrees(delta)}\n\n""")
 
-            print(f"""Current Lap Dist: {current_lap_dist}\tCurrent Position: {predict_position(gpr_model, scaler, current_lap_dist)[0]}
-            Lookahead Lap Dist: {current_lap_dist + look_ahead}\tPredicted Positions: {target_point[0]}""")
+            calculate_control(vjoy_device, delta, current_lap_dist)
 
-            calculate_control(vjoy_device, delta, sign, current_lap_dist)
-
-            time.sleep(1)
             win32event.ResetEvent(telemetry_h)
-
-        # CURRENT PROBLEMS: 1 - Euclidean distance is always positive, so it will never turn left.
 
         elif event_result == win32event.WAIT_OBJECT_0 + 1:
             # Read vehicle scoring data from shared memory

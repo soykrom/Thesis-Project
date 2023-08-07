@@ -1,3 +1,4 @@
+import pyvjoy
 import gym
 from gym import spaces
 from gym.envs.registration import register
@@ -33,16 +34,14 @@ class RFactor2Environment(gym.Env):
         self.action_space = spaces.Box(-1.0, 1.0, shape=(2,), dtype=float)
         # Velocity and Heading (X and Z axis)
         self.observation_space = spaces.Box(-1.0, 1.0, shape=(2, 2), dtype=float)
+        self.vjoy_device = pyvjoy.VJoyDevice(1)
 
+    # TO DO Not static as it will need object specific old state
     def calculate_reward(self, state):
-        return 1
+        return state[3] * 0.4
 
-    def step(self, action):
-        steering_action, acceleration_action = action
-
-        # Execute the action using VJoy
-
-        # Obtain in-game data (after action execution, it waits until the info is received)
+    # FIX ME add relevant observation data to observation space. Method won't be static because of that
+    def obtain_state(self):
         win32event.WaitForSingleObject([telemetryH], False, win32event.INFINITE)
 
         data = telemetryMMfile.read().decode("utf-8").rstrip('\x00').replace("\n", "").split(',')
@@ -61,29 +60,45 @@ class RFactor2Environment(gym.Env):
         # Compile information into state variable (Maybe turn into class/dict)
         state = [position, heading, velocity, acceleration]
 
+        # TO DO
+        reward = self.calculate_reward(state)
+        done = False
+
         print(f"Position: {position}")
         print(f"Heading: {heading}")
-        print(f"Velocity: {velocity}")  # Car speed in m/s
-        print(f"Acceleration: {acceleration}")  # Car acceleration m/s^2
-
-        # Calculate reward
-        reward = self.calculate_reward(state)
-
-        if self.is_done():
-            self.reset_race()
-            # Obtain observations related to reset
+        print(f"Velocity: {velocity}")  # In m/s
+        print(f"Acceleration: {acceleration}")  # In m/s^2
+        print(f"Reward: {reward}")
 
         # Reset Event
         win32event.ResetEvent(telemetryH)
-
-        return reward
-
-    def is_done(self):
-        return False
+        return state, reward, done
 
     def reset_race(self):
-        # Send F command via VJoy
-        pass
+        # Send F command (resets race) via VJoy
+        self.vjoy_device.set_button(1, 1)
+
+        # Obtain observations related to reset
+        new_state, _, _ = self.obtain_state()
+
+        # Turn reset button off
+        self.vjoy_device.set_button(1, 0)
+
+        return new_state
+
+    # @param actions = [steering_action, throttle_action]
+    def step(self, actions):
+        # Execute the action using VJoy
+        self.vjoy_device.data.wAxisX = int(16384 + float(actions[0]) * 16384)
+        self.vjoy_device.data.wAxisY = int(16384 + float(actions[1]) * 16384)
+
+        # Obtain in-game data (after action execution, it waits until the info is received)
+        new_state, reward, done = self.obtain_state()
+
+        if done:
+            new_state = self.reset_race()
+
+        return new_state, reward, done
 
 
 # Register Custom Environment

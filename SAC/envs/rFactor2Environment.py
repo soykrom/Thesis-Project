@@ -5,6 +5,7 @@ from gym.envs.registration import register
 import win32event
 import mmap
 import math
+import time
 
 # Setting up rFactor2 plugin reader
 telemetryH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0, "WriteEventCarData")
@@ -34,11 +35,14 @@ class RFactor2Environment(gym.Env):
         self.action_space = spaces.Box(-1.0, 1.0, shape=(2,), dtype=float)
         # Velocity and Heading (X and Z axis)
         self.observation_space = spaces.Box(-1.0, 1.0, shape=(2, 2), dtype=float)
+        # Vjoy Device
         self.vjoy_device = pyvjoy.VJoyDevice(1)
+        # Previous state (for reward purposes)
+        self.prev_state = None
 
-    # TO DO Not static as it will need object specific old state
+    # Calculated based on how much distance was advanced since last state
     def calculate_reward(self, state):
-        return state[3] * 0.4
+        return math.dist(self.prev_state[0], state[0])
 
     # FIX ME add relevant observation data to observation space. Method won't be static because of that
     def obtain_state(self):
@@ -60,7 +64,9 @@ class RFactor2Environment(gym.Env):
         # Compile information into state variable (Maybe turn into class/dict)
         state = [position, heading, velocity, acceleration]
 
-        # TO DO
+        if self.prev_state is None:
+            self.prev_state = state
+
         reward = self.calculate_reward(state)
         done = False
 
@@ -70,7 +76,8 @@ class RFactor2Environment(gym.Env):
         print(f"Acceleration: {acceleration}")  # In m/s^2
         print(f"Reward: {reward}")
 
-        # Reset Event
+        # Update previous state and Reset Event
+        self.prev_state = state
         win32event.ResetEvent(telemetryH)
         return state, reward, done
 
@@ -86,13 +93,14 @@ class RFactor2Environment(gym.Env):
 
         return new_state
 
-    # @param actions = [steering_action, throttle_action]
+    # actions = [steering_action, throttle_action]
     def step(self, actions):
         # Execute the action using VJoy
         self.vjoy_device.data.wAxisX = int(16384 + float(actions[0]) * 16384)
         self.vjoy_device.data.wAxisY = int(16384 + float(actions[1]) * 16384)
 
         # Obtain in-game data (after action execution, it waits until the info is received)
+        time.sleep(0.01)
         new_state, reward, done = self.obtain_state()
 
         if done:

@@ -95,7 +95,7 @@ def calculate_heading(ori_x, ori_z):
         print("1st quadrant")
         heading_angle = math.asin(ori_x)
 
-    elif ori_x > 0 and ori_z < 0:
+    elif ori_x > 0 > ori_z:
         print("2nd quadrant")
         heading_angle = (math.pi - math.asin(ori_x))
 
@@ -103,7 +103,7 @@ def calculate_heading(ori_x, ori_z):
         print("3rd quadrant")
         heading_angle = (math.pi - math.asin(ori_x))
 
-    elif ori_x < 0 and ori_z > 0:
+    elif ori_x < 0 < ori_z:
         print("4th quadrant")
         heading_angle = (2 * math.pi + math.asin(ori_x))
 

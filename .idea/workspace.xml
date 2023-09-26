@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="fb068fdc-e707-41d6-85c9-868366522b91" name="Changes" comment="Added simple Done conditions.&#10;Cleared up Reward Function.&#10;&#10;Rudimentary debug was done, but not with agent.&#10;&#10;Some refactoring to make step function more clear needed.x">
+      <change beforePath="$PROJECT_DIR$/SAC/envs/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/envs/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SAC/envs/rFactor2Environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/envs/rFactor2Environment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SAC/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="3740ba3a-6f7b-4ed6-9715-0a8e4b88f7b4" />
+        <option name="url" value="https://github.com/soykrom/Thesis-Project.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2OkEseBfFLCrJjWnOliR62rLRc2" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/IST/Tese/Thesis-Project/gameControler.py&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors.General&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fb068fdc-e707-41d6-85c9-868366522b91" name="Changes" comment="" />
+      <created>1682096388699</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1682096388699</updated>
+      <workItem from="1682098583899" duration="2110000" />
+      <workItem from="1682521190820" duration="26685000" />
+      <workItem from="1684593185579" duration="176000" />
+      <workItem from="1684712470969" duration="9000" />
+      <workItem from="1684763222717" duration="31000" />
+      <workItem from="1685135999921" duration="323000" />
+      <workItem from="1689002204424" duration="243000" />
+      <workItem from="1689091255330" duration="1415000" />
+      <workItem from="1690211912546" duration="1427000" />
+      <workItem from="1690213373411" duration="309000" />
+      <workItem from="1690553973063" duration="5482000" />
+      <workItem from="1693911579527" duration="3620000" />
+      <workItem from="1694424131170" duration="10175000" />
+      <workItem from="1695306643351" duration="4503000" />
+      <workItem from="1695318897925" duration="1557000" />
+      <workItem from="1695722773926" duration="314000" />
+    </task>
+    <task id="LOCAL-00001" summary="Pure Pursuit attempt">
+      <created>1682625544496</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1682625544496</updated>
+    </task>
+    <task id="LOCAL-00002" summary="New branch created. Added SAC skeleton.">
+      <created>1690212501146</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1690212501146</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Fixed Git Stuff">
+      <created>1690213594110</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1690213594110</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Added game event to environment. &#10;Added acceleration and velocity game controller">
+      <created>1690564864016</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1690564864016</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Cleared up code.&#10;Added reward function.&#10;Observation space and Action Space relevancy?&#10;Missing linking between agent and environment.">
+      <created>1693928373575</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1693928373575</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Added simple Done conditions.&#10;Cleared up Reward Function.&#10;&#10;Rudimentary debug was done, but not with agent.&#10;&#10;Some refactoring to make step function more clear needed.">
+      <created>1695320431959</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1695320431959</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Pure Pursuit attempt" />
+    <MESSAGE value="New branch created. Added SAC skeleton." />
+    <MESSAGE value="Fixed Git Stuff" />
+    <MESSAGE value="Added game event to environment. &#10;Added acceleration and velocity game controller" />
+    <MESSAGE value="Cleared up code.&#10;Added reward function.&#10;Observation space and Action Space relevancy?&#10;Missing linking between agent and environment." />
+    <MESSAGE value="Added simple Done conditions.&#10;Cleared up Reward Function.&#10;&#10;Rudimentary debug was done, but not with agent.&#10;&#10;Some refactoring to make step function more clear needed." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added simple Done conditions.&#10;Cleared up Reward Function.&#10;&#10;Rudimentary debug was done, but not with agent.&#10;&#10;Some refactoring to make step function more clear needed." />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Thesis_Project$gameControler_py.coverage" NAME="gameControler.py Coverage Results" MODIFIED="1682527027657" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/Thesis_Project$gameControler2.coverage" NAME="gameControler2 Coverage Results" MODIFIED="1695319727429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Thesis_Project$gameControler.coverage" NAME="gameControler Coverage Results" MODIFIED="1682526504825" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>

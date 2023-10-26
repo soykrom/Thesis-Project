@@ -1,15 +1,26 @@
 import numpy as np
 import pygame
 import csv
+import time
+
+
+def remove_useless_commands(actions):
+    start_index = 0
+    end_index = len(actions) - 1
+
+    while start_index < len(actions) and all(val == 0 for val in actions[start_index]):
+        start_index += 1
+
+    while end_index >= 0 and all(val == 0 for val in actions[end_index]):
+        end_index -= 1
+
+    return actions[start_index:end_index + 1]
 
 
 def main():
     pygame.init()
     pygame.joystick.init()
 
-    accel_flag = 0
-    brake_flag = 0
-    joystick_val = 0.0
     actions = []
 
     if pygame.joystick.get_count() == 0:
@@ -25,38 +36,29 @@ def main():
 
     try:
         while True:
-            for event in pygame.event.get():
-                if event.axis % 2 != 0 == pygame.JOYAXISMOTION:
-                    # Handle analog stick input
-                    axis = event.axis
-                    if axis % 2 != 0:
-                        continue
+            pygame.event.get()
 
-                    joystick_val = event.value
-                elif event.type == pygame.JOYBUTTONDOWN:
-                    # Handle button press
-                    button = event.button
-                    if button == 8:  # L2
-                        brake_flag = 1
-                    elif button == 9:  # R2
-                        accel_flag = 1
-                elif event.type == pygame.JOYBUTTONUP:
-                    # Handle button release
-                    button = event.button
-                    if button == 8:
-                        brake_flag = 0
-                    elif button == 9:
-                        accel_flag = 0
+            joystick_val = controller.get_axis(0) + controller.get_axis(2)
 
-                action = [accel_flag - brake_flag, np.clip(joystick_val, -1, 1).round(3)]
+            brake_flag = controller.get_button(8)
+            accel_flag = controller.get_button(9)
 
-                actions.append(action)
-                print(f"Action: {action}")
+            action = [np.clip(joystick_val, -1, 1).round(3), accel_flag - brake_flag]
+            actions.append(action)
+
+            print(f"Action: {action}")
+
+            time.sleep(0.15)
 
     except KeyboardInterrupt:
         controller.quit()
         pygame.quit()
 
+        print("Before: ", actions)
+
+        actions = remove_useless_commands(actions)
+
+        print("After: ", actions)
         with open("inputs.csv", mode, newline='') as file:
             csvwriter = csv.writer(file)
 

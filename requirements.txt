@@ -7,3 +7,4 @@ matplotlib~=3.7.1
 scikit-learn~=1.2.2
 pandas~=1.5.3
 torch~=2.0.1
+pyinput~=0.3.2

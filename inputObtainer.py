@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 import csv
-import time
+import fidgrovePluginUtils as utils
 
 
 def remove_useless_commands(actions):
@@ -43,22 +43,18 @@ def main():
             brake_flag = controller.get_button(8)
             accel_flag = controller.get_button(9)
 
-            action = [np.clip(joystick_val, -1, 1).round(3), accel_flag - brake_flag]
+            action = [-np.clip(joystick_val, -1, 1).round(3), accel_flag - brake_flag]
             actions.append(action)
 
             print(f"Action: {action}")
-
-            time.sleep(0.15)
+            state = utils.obtain_state()
 
     except KeyboardInterrupt:
         controller.quit()
         pygame.quit()
 
-        print("Before: ", actions)
-
         actions = remove_useless_commands(actions)
 
-        print("After: ", actions)
         with open("inputs.csv", mode, newline='') as file:
             csvwriter = csv.writer(file)
 

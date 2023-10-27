@@ -8,6 +8,7 @@ import win32event
 import math
 import mmap
 from simple_pid import PID
+import fidgrovePluginUtils as utils
 
 pid = PID(0.05, 0, 0.05, setpoint=1)
 

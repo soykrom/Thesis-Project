@@ -56,6 +56,8 @@ def main():
 
             prev_state = new_state
 
+            utils.reset_events()
+
             time.sleep(0.1)
 
     except KeyboardInterrupt:

@@ -1,10 +1,11 @@
 import numpy as np
 import pygame
-import csv
+import time
 import fidgrovePluginUtils as utils
+import pandas
 
 
-def remove_useless_commands(actions):
+def remove_useless_commands(actions, states):
     start_index = 0
     end_index = len(actions) - 1
 
@@ -14,7 +15,7 @@ def remove_useless_commands(actions):
     while end_index >= 0 and all(val == 0 for val in actions[end_index]):
         end_index -= 1
 
-    return actions[start_index:end_index + 1]
+    return actions[start_index:end_index + 1], states[start_index:end_index + 1]
 
 
 def main():
@@ -22,6 +23,7 @@ def main():
     pygame.joystick.init()
 
     actions = []
+    state_transitions = []
 
     if pygame.joystick.get_count() == 0:
         print("No controllers found.")
@@ -35,6 +37,8 @@ def main():
     mode = input("Select mode (a - Append ; w - New): ")
 
     try:
+        state = utils.obtain_state()
+
         while True:
             pygame.event.get()
 
@@ -45,22 +49,29 @@ def main():
 
             action = [-np.clip(joystick_val, -1, 1).round(3), accel_flag - brake_flag]
             actions.append(action)
-
             print(f"Action: {action}")
-            state = utils.obtain_state()
+
+            new_state = utils.obtain_state()
+            state_transitions.append([state, new_state])
+
+            state = new_state
+
+            time.sleep(0.1)
 
     except KeyboardInterrupt:
         controller.quit()
         pygame.quit()
 
-        actions = remove_useless_commands(actions)
+        actions, state_transitions = remove_useless_commands(actions, state_transitions)
 
-        with open("inputs.csv", mode, newline='') as file:
-            csvwriter = csv.writer(file)
+        print(len(actions))
+        print(len(state_transitions))
 
-            csvwriter.writerows(actions)
+        actions_df = pandas.DataFrame(actions, columns=['Steering', 'Throttle'])
+        actions_df.to_csv('inputs.csv', index=False)
 
-            file.close()
+        states_df = pandas.DataFrame(state_transitions, columns=['Previous State', 'New State'])
+        states_df.to_csv('transitions.csv', index=False)
 
 
 if __name__ == "__main__":

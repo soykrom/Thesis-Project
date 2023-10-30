@@ -16,14 +16,6 @@ pid = PID(0.05, 0, 0.05, setpoint=1)
 # j = pyvjoy.VJoyDevice(1)
 # j.data
 
-# Setting up rFactor2 plugin reader
-telemetryH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0, "WriteEventCarData")
-telemetryMMfile = mmap.mmap(-1, length=73, tagname="MyFileMappingCarData", access=mmap.ACCESS_READ)
-
-vehicleScoringH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0, "WriteVehicleScoring")
-vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", access=mmap.ACCESS_READ)
-
-
 # scoringH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0 , "WriteEventScoringData")
 # scoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileMappingScoringData", access=mmap.ACCESS_READ)
 
@@ -52,12 +44,12 @@ def calculate_heading(ori_x, ori_z):
 previous_lap_dist = 0
 # Main loop
 while True:
-    eventResult = win32event.WaitForMultipleObjects([telemetryH, vehicleScoringH], False, win32event.INFINITE)
+    eventResult = win32event.WaitForMultipleObjects([utils.telemetryH, utils.vehicleScoringH], False, win32event.INFINITE)
     if eventResult == win32event.WAIT_OBJECT_0:
         # Read telemetry data from shared memory
         # print("received telemetry data")
-        data = telemetryMMfile.read().decode("utf-8").rstrip('\x00').replace("\n", "").split(',')
-        telemetryMMfile.seek(0)
+        data = utils.telemetryMMfile.read().decode("utf-8").rstrip('\x00').replace("\n", "").split(',')
+        utils.telemetryMMfile.seek(0)
 
         # Position
         posX = float(data[0])
@@ -82,13 +74,13 @@ while True:
         # print(f"Acceleration: {accZ}")  # In m/s^2
 
         time.sleep(0.2)
-        win32event.ResetEvent(telemetryH)
+        win32event.ResetEvent(utils.telemetryH)
 
     elif eventResult == win32event.WAIT_OBJECT_0 + 1:
         # print("received vehicle scoring data")
         # Read vehicle scoring data from shared memory
-        data = vehicleScoringMMfile.read().decode("utf-8").replace("\n", "").split(',')
-        vehicleScoringMMfile.seek(0)
+        data = utils.vehicleScoringMMfile.read().decode("utf-8").replace("\n", "").split(',')
+        utils.vehicleScoringMMfile.seek(0)
 
         lapDist = float(data[0])
         pathLateral = float(data[1])
@@ -100,7 +92,7 @@ while True:
         previous_lap_dist = lapDist
 
         time.sleep(0.2)
-        win32event.ResetEvent(vehicleScoringH)
+        win32event.ResetEvent(utils.vehicleScoringH)
 
     # elif(eventResult == win32event.WAIT_OBJECT_0+2):
     # print("received scoring data")

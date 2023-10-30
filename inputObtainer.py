@@ -34,10 +34,10 @@ def main():
 
     print(f"Controller: {controller.get_name()}\n")
 
-    mode = input("Select mode (a - Append ; w - New): ")
+    input("Press any button to start: ")
 
     try:
-        state = utils.obtain_state()
+        prev_state = utils.obtain_state()
 
         while True:
             pygame.event.get()
@@ -52,9 +52,9 @@ def main():
             print(f"Action: {action}")
 
             new_state = utils.obtain_state()
-            state_transitions.append([state, new_state])
+            state_transitions.append([prev_state, new_state])
 
-            state = new_state
+            prev_state = new_state
 
             time.sleep(0.1)
 

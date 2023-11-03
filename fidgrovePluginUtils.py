@@ -1,6 +1,10 @@
 import win32event
 import mmap
 import math
+import numpy as np
+import pickle
+import matplotlib.pyplot as plt
+import time
 
 # rFactor2 plugin Setup
 telemetryH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0, "WriteEventCarData")
@@ -13,6 +17,98 @@ vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", 
 c_vel = 1.2  # Velocity
 c_pl = 0.65  # Path Lateral
 c_dist = 1.5  # Distance
+
+# Normalization values
+with open('../scale_factors.pkl', 'rb') as file:
+    scaling_factors = pickle.load(file)
+    min_values = pickle.load(file)
+
+
+def plot(previous_states_df, agent):
+    num_samples = len(previous_states_df)
+
+    selected_indices = np.random.choice(len(np.array(previous_states_df)), num_samples, replace=False)
+    state_samples = [np.array(previous_states_df)[i] for i in selected_indices]
+
+    # Initialize arrays to store the action values for each state
+    actions_steering = np.zeros(num_samples)
+    actions_throttle = np.zeros(num_samples)
+
+    # Calculate the actions for each state based on your policy
+    for i in range(num_samples):
+        state = np.array(state_samples[i], dtype=float)
+        action = agent.select_action(state)
+
+        actions_steering[i] = action[0]
+        actions_throttle[i] = action[1]
+
+    dist_state_samples = [el[5] for el in state_samples]
+
+    # Create the action heatmap
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    # Plot data on the first subplot
+    ax1.scatter(dist_state_samples, actions_steering)
+    ax1.set_title('Subplot 1')
+    ax1.set_xlabel('Lap Distance')
+    ax1.set_ylabel('Steering')
+
+    # Plot data on the second subplot
+    ax2.scatter(dist_state_samples, actions_throttle)
+    ax2.set_title('Subplot 2')
+    ax2.set_xlabel('Distance')
+    ax2.set_ylabel('Throttle')
+
+    # Display both subplots using a single plt.show() call
+    plt.show()
+
+    with open('../lists.pkl', 'wb') as filename:
+        pickle.dump(state_samples, filename)
+        pickle.dump(actions_steering, filename)
+        pickle.dump(actions_throttle, filename)
+
+
+def process_transitions(actions_df, states_df, agent, memory, batch_size, updates_per_step):
+    print("Processing initial transitions")
+    timer = time.process_time()
+    actions = []
+    prev_states = []
+    next_states = []
+    updates = 0
+
+    previous_states_df = states_df['Previous State'].apply(lambda x: x.strip('[]').split(','))
+    new_states_df = states_df['New State'].apply(lambda x: x.strip('[]').split(','))
+
+    for index, action in actions_df.iterrows():
+        action = np.array(action)
+        if action.ndim == 1:
+            action = [action]
+        else:
+            action = action.tolist()
+
+        prev_state = np.array(previous_states_df[index], dtype=float)
+        new_state = np.array(new_states_df[index], dtype=float)
+
+        actions.append(action)
+        prev_states.append(prev_state)
+        next_states.append(new_state)
+
+        done = episode_finish(prev_state, new_state)
+        reward = calculate_reward(prev_state, new_state, done)
+
+        memory.push(prev_state, action, reward, new_state, float(not done))
+
+        if len(memory) > batch_size:
+            for i in range(updates_per_step):
+                # Update parameters of all the networks
+                agent.update_parameters(memory, batch_size, updates)
+                updates += 1
+
+    elapsed_time = time.process_time() - timer
+    print(f"Initial inputs and parameter updates finished after {elapsed_time} seconds.")
+
+    plot(previous_states_df, agent)
+
+    return updates
 
 
 def reset_events():
@@ -69,6 +165,13 @@ def episode_finish(prev_state, state):
         (lap_dist_new < 200 and pl > 5.5)
 
 
+def scale_features(state):
+    scaled_state = [(state[i] - min_value_i) * scale_factor_i - 1.0 for i, scale_factor_i, min_value_i in
+                    zip(range(len(state)), scaling_factors, min_values)]
+
+    return scaled_state
+
+
 def obtain_state():
     win32event.WaitForMultipleObjects([vehicleScoringH, telemetryH], True, win32event.INFINITE)
 
@@ -96,4 +199,4 @@ def obtain_state():
     # Compile information into state variable (Maybe turn into class/dict)
     state = [position_x, position_y, heading, velocity, acceleration, lap_dist, path_lateral]
 
-    return state
+    return np.array(scale_features(state))

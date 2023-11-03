@@ -3,6 +3,7 @@ import pygame
 import time
 import fidgrovePluginUtils as utils
 import pandas
+import argparse
 
 
 def remove_useless_commands(actions, states):
@@ -19,6 +20,9 @@ def remove_useless_commands(actions, states):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--mode', type=str, default='w')
+
     pygame.init()
     pygame.joystick.init()
 
@@ -33,8 +37,6 @@ def main():
     controller.init()
 
     print(f"Controller: {controller.get_name()}\n")
-
-    input("Press any button to start: ")
 
     try:
         prev_state = utils.obtain_state()
@@ -61,6 +63,8 @@ def main():
             time.sleep(0.1)
 
     except KeyboardInterrupt:
+        print("Finishing...")
+
         controller.quit()
         pygame.quit()
 

@@ -4,17 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fb068fdc-e707-41d6-85c9-868366522b91" name="Changes" comment="Debugging done, and ready to visualize policy. Further testing needed">
+    <list default="true" id="fb068fdc-e707-41d6-85c9-868366522b91" name="Changes" comment="Added normalization factors.&#10;Added recorded inputs and transitions.&#10;Refactored code significantly.&#10;Removed insignificant files.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fidgrovePluginUtils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fidgrovePluginUtils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gameControler.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gameControler2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/inputObtainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputObtainer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mapPrinter.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pytorch-soft-actor-critic" beforeDir="false" afterPath="$PROJECT_DIR$/pytorch-soft-actor-critic" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pytorch-soft-actor-critic/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/pytorch-soft-actor-critic/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytorch-soft-actor-critic/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/pytorch-soft-actor-critic/model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytorch-soft-actor-critic/sac.py" beforeDir="false" afterPath="$PROJECT_DIR$/pytorch-soft-actor-critic/sac.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +28,7 @@
         <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/pytorch-soft-actor-critic" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -58,20 +52,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/IST/Tese/Thesis-Project/pytorch-soft-actor-critic/main.py",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "configurable.group.tools",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/IST/Tese/Thesis-Project/pytorch-soft-actor-critic/main.py&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.tools&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\IST\Tese\Thesis-Project\gym-examples-main\gym_examples\envs" />
@@ -155,7 +149,9 @@
       <workItem from="1698923997231" duration="595000" />
       <workItem from="1698927448733" duration="12606000" />
       <workItem from="1698947112129" duration="5049000" />
-      <workItem from="1698970437804" duration="4969000" />
+      <workItem from="1698970437804" duration="5479000" />
+      <workItem from="1699013813089" duration="4627000" />
+      <workItem from="1699031831359" duration="313000" />
     </task>
     <task id="LOCAL-00001" summary="Pure Pursuit attempt">
       <created>1682625544496</created>
@@ -289,7 +285,15 @@
       <option name="project" value="LOCAL" />
       <updated>1698683446824</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Added normalization factors.&#10;Added recorded inputs and transitions.&#10;Refactored code significantly.&#10;Removed insignificant files.">
+      <option name="closed" value="true" />
+      <created>1698975948583</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1698975948583</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -322,12 +326,13 @@
     <MESSAGE value="Recording inputs and State Transitions.&#10;&#10;All that's left is to actually push to memory" />
     <MESSAGE value="Method to push pre-recorded inputs and corresponding state transitions done (not tested its impact on the agents learning).&#10;&#10;Some refactoring done" />
     <MESSAGE value="Debugging done, and ready to visualize policy. Further testing needed" />
-    <option name="LAST_COMMIT_MESSAGE" value="Debugging done, and ready to visualize policy. Further testing needed" />
+    <MESSAGE value="Added normalization factors.&#10;Added recorded inputs and transitions.&#10;Refactored code significantly.&#10;Removed insignificant files." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added normalization factors.&#10;Added recorded inputs and transitions.&#10;Refactored code significantly.&#10;Removed insignificant files." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Thesis_Project$test.coverage" NAME="test Coverage Results" MODIFIED="1698972340596" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Thesis_Project$sac.coverage" NAME="sac Coverage Results" MODIFIED="1698944090846" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pytorch-soft-actor-critic" />
-    <SUITE FILE_PATH="coverage/Thesis_Project$main.coverage" NAME="main Coverage Results" MODIFIED="1698975439244" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pytorch-soft-actor-critic" />
+    <SUITE FILE_PATH="coverage/Thesis_Project$main.coverage" NAME="main Coverage Results" MODIFIED="1699031975499" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pytorch-soft-actor-critic" />
     <SUITE FILE_PATH="coverage/Thesis_Project$gameControler_py.coverage" NAME="gameControler.py Coverage Results" MODIFIED="1682527027657" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/Thesis_Project$inputObtainer.coverage" NAME="inputObtainer Coverage Results" MODIFIED="1698936679681" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Thesis_Project$gameControler2.coverage" NAME="gameControler2 Coverage Results" MODIFIED="1695319727429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

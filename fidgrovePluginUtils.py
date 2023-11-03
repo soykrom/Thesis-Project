@@ -15,7 +15,7 @@ vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", 
 
 # Reward coefficients
 c_vel = 1.2  # Velocity
-c_pl = 0.65  # Path Lateral
+c_pl = 1.0  # Path Lateral
 c_dist = 1.5  # Distance
 
 # Normalization values
@@ -169,7 +169,7 @@ def scale_features(state):
     scaled_state = [(state[i] - min_value_i) * scale_factor_i - 1.0 for i, scale_factor_i, min_value_i in
                     zip(range(len(state)), scaling_factors, min_values)]
 
-    return scaled_state
+    return np.array(scaled_state)
 
 
 def obtain_state():
@@ -197,6 +197,6 @@ def obtain_state():
     path_lateral = float(vehicle_data[1])
 
     # Compile information into state variable (Maybe turn into class/dict)
-    state = [position_x, position_y, heading, velocity, acceleration, lap_dist, path_lateral]
+    state = np.array([position_x, position_y, heading, velocity, acceleration, lap_dist, path_lateral])
 
-    return np.array(scale_features(state))
+    return state

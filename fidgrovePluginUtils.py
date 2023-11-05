@@ -13,15 +13,24 @@ telemetryMMfile = mmap.mmap(-1, length=80, tagname="MyFileMappingCarData", acces
 vehicleScoringH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0, "WriteVehicleScoring")
 vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", access=mmap.ACCESS_READ)
 
-# Reward coefficients
-c_vel = 1.2  # Velocity
-c_pl = 1.0  # Path Lateral
-c_dist = 1.5  # Distance
-
 # Normalization values
-with open('../scale_factors.pkl', 'rb') as file:
+with open('../common/scale_factors.pkl', 'rb') as file:
     scaling_factors = pickle.load(file)
     min_values = pickle.load(file)
+
+
+def load_initial(file_path):
+    with open(file_path, 'rb') as filename:
+        agent = pickle.load(filename)
+        memory = pickle.load(filename)
+
+    return agent, memory
+
+
+def save_initial(file_path, agent, memory):
+    with open(file_path, 'wb') as filename:
+        pickle.dump(agent, filename)
+        pickle.dump(memory, filename)
 
 
 def plot(previous_states_df, agent):
@@ -61,7 +70,7 @@ def plot(previous_states_df, agent):
     # Display both subplots using a single plt.show() call
     plt.show()
 
-    with open('../lists.pkl', 'wb') as filename:
+    with open('../common/lists.pkl', 'wb') as filename:
         pickle.dump(state_samples, filename)
         pickle.dump(actions_steering, filename)
         pickle.dump(actions_throttle, filename)
@@ -135,18 +144,29 @@ def calculate_heading(x, z):
 
 # Calculated based on how much distance was advanced since last state and current velocity
 def calculate_reward(prev_state, state, done):
+    # Reward coefficients
+    # c_vel = 1.2  # Velocity
+    c_pl = 1.0  # Path Lateral
+    c_dist = 1.5  # Distance
+    c_done = 1.0  # Penalty for finishing before race end
+
     lap_dist_prev = float(prev_state[5])
     lap_dist_new = float(state[5])
-    vel = float(state[3])
+    # vel = float(state[3])
     pl = float(state[6])
 
     # Necessary because of resetting and plugin interaction
     if abs(lap_dist_new - lap_dist_prev) > 500:
         return 0
+    elif done:
+        penalty = 1 / (lap_dist_new * scaling_factors[5])
+    else:
+        penalty = 0
 
-    reward = c_dist * (lap_dist_new - lap_dist_prev) + \
-             c_vel * vel - \
-             c_pl * abs(pl)
+    reward = c_dist * (lap_dist_new - lap_dist_prev) - \
+             c_pl * abs(pl) - \
+             c_done * penalty
+    # c_vel * vel - \
 
     return reward
 

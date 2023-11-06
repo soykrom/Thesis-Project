@@ -18,6 +18,9 @@ with open('../common/scale_factors.pkl', 'rb') as file:
     scaling_factors = pickle.load(file)
     min_values = pickle.load(file)
 
+# CONSTANTS
+ACTION_TIMEOUT_LIMIT = 1000
+
 
 def load_initial(file_path):
     with open(file_path, 'rb') as filename:
@@ -57,13 +60,13 @@ def plot(previous_states_df, agent):
     fig, (ax1, ax2) = plt.subplots(1, 2)
     # Plot data on the first subplot
     ax1.scatter(dist_state_samples, actions_steering)
-    ax1.set_title('Subplot 1')
+    ax1.set_title('Steering Actions')
     ax1.set_xlabel('Lap Distance')
     ax1.set_ylabel('Steering')
 
     # Plot data on the second subplot
     ax2.scatter(dist_state_samples, actions_throttle)
-    ax2.set_title('Subplot 2')
+    ax2.set_title('Throttle Actions')
     ax2.set_xlabel('Distance')
     ax2.set_ylabel('Throttle')
 
@@ -76,7 +79,7 @@ def plot(previous_states_df, agent):
         pickle.dump(actions_throttle, filename)
 
 
-def process_transitions(actions_df, states_df, agent, memory, batch_size, updates_per_step):
+def process_transitions(actions_df, states_df, agent, memory, batch_size, updates_per_step, coefficients=None):
     print("Processing initial transitions")
     timer = time.process_time()
     actions = []
@@ -102,7 +105,7 @@ def process_transitions(actions_df, states_df, agent, memory, batch_size, update
         next_states.append(new_state)
 
         done = episode_finish(prev_state, new_state)
-        reward = calculate_reward(prev_state, new_state, done)
+        reward = calculate_reward(prev_state, new_state, done, coefficients)
 
         memory.push(prev_state, action, reward, new_state, float(not done))
 
@@ -143,12 +146,18 @@ def calculate_heading(x, z):
 
 
 # Calculated based on how much distance was advanced since last state and current velocity
-def calculate_reward(prev_state, state, done):
+def calculate_reward(prev_state, state, done, coefficients=None):
     # Reward coefficients
     # c_vel = 1.2  # Velocity
-    c_pl = 1.0  # Path Lateral
-    c_dist = 1.5  # Distance
-    c_done = 1.0  # Penalty for finishing before race end
+    if coefficients:
+        # Parameter tuning
+        c_pl = coefficients[0]
+        c_dist = coefficients[1]
+        c_done = coefficients[2]
+    else:
+        c_pl = 1.3  # Path Lateral
+        c_dist = 2.1  # Distance
+        c_done = 0.75  # Penalty for finishing before race end
 
     lap_dist_prev = float(prev_state[5])
     lap_dist_new = float(state[5])
@@ -160,8 +169,13 @@ def calculate_reward(prev_state, state, done):
         return 0
     elif done:
         penalty = 1 / (lap_dist_new * scaling_factors[5])
+        print("Penalty: ", penalty)
     else:
         penalty = 0
+
+    # print(f"Lap dist diff: {lap_dist_new - lap_dist_prev}\t
+    # With coefficient: {c_dist * (lap_dist_new - lap_dist_prev)}")
+    # print(f"Path lateral: {abs(pl)}\tWith Coefficient: {c_pl * abs(pl)}")
 
     reward = c_dist * (lap_dist_new - lap_dist_prev) - \
              c_pl * abs(pl) - \
@@ -172,17 +186,32 @@ def calculate_reward(prev_state, state, done):
 
 
 # Checks if a lap is completed or if the agent goes backwards (with some margin and reset care)
-# Or if it drives out of bounds
+# Or if it drives out of bounds or if it times out
+count = 0
+timeout_dist = 0
+
+
 def episode_finish(prev_state, state):
+    timeout = False
+    global count
+    global timeout_dist
     lap_dist_prev = float(prev_state[5])
     lap_dist_new = float(state[5])
     pl = float(state[6])
 
     # print(f"Difference: {lap_dist_prev - lap_dist_new}\tPath Lateral: {pl}")
+    if count % ACTION_TIMEOUT_LIMIT == 0 and count > 0:
+        timeout = abs(timeout_dist - lap_dist_new) < 30
+        timeout_dist = lap_dist_new
+        print("TIMEOUT: ", timeout)
+        print(f"Timeout Dist: {timeout_dist}\tCurrent dist: {lap_dist_new}")
+
+    count += 1
 
     return (30.0 > lap_dist_prev - lap_dist_new > 0.25) or \
         abs(pl) >= 8.0 or \
-        (lap_dist_new < 200 and pl > 5.5)
+        (lap_dist_new < 200 and pl > 5.5) or \
+        timeout
 
 
 def scale_features(state):

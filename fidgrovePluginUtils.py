@@ -79,6 +79,15 @@ def plot(previous_states_df, agent):
         pickle.dump(actions_throttle, filename)
 
 
+def get_coefficients(file_path):
+    with open(file_path, 'rb') as filename:
+        co_pl = pickle.load(filename)
+        co_dist = pickle.load(filename)
+        co_done = pickle.load(filename)
+
+    return np.array(co_pl, co_dist, co_done)
+
+
 def process_transitions(actions_df, states_df, agent, memory, batch_size, updates_per_step, coefficients=None):
     print("Processing initial transitions")
     timer = time.process_time()

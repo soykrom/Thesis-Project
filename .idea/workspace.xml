@@ -4,22 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fb068fdc-e707-41d6-85c9-868366522b91" name="Changes" comment="A few steps forward.">
-      <change afterPath="$PROJECT_DIR$/coefficientTuning.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="fb068fdc-e707-41d6-85c9-868366522b91" name="Changes" comment="Coefficient tuning is working!&#10;&#10;There is a double reset problem somehow&#10;&#10;Created a venv&#10;Added rFactor2 as a separate file making gym_examples useless">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/coefficient_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/coefficient_generator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/initial_training.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/common/initial_training.pkl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/lists.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/common/lists.pkl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fidgroveData2Pandas.py" beforeDir="false" afterPath="$PROJECT_DIR$/fidgroveData2Pandas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fidgrovePluginUtils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fidgrovePluginUtils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inputObtainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputObtainer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytorch-soft-actor-critic" beforeDir="false" afterPath="$PROJECT_DIR$/pytorch-soft-actor-critic" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytorch-soft-actor-critic/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/pytorch-soft-actor-critic/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytorch-soft-actor-critic/replay_memory.py" beforeDir="false" afterPath="$PROJECT_DIR$/pytorch-soft-actor-critic/replay_memory.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytorch-soft-actor-critic/sac.py" beforeDir="false" afterPath="$PROJECT_DIR$/pytorch-soft-actor-critic/sac.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytorch-soft-actor-critic/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/pytorch-soft-actor-critic/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/.pre-commit-config.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/gym_examples/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/gym_examples/envs/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/gym_examples/envs/grid_world.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/gym_examples/envs/rFactor2Environment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/gym_examples/wrappers/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/gym_examples/wrappers/clip_reward.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/gym_examples/wrappers/discrete_actions.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/gym_examples/wrappers/reacher_weighted_reward.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/gym_examples/wrappers/relative_position.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gym-examples/setup.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +38,7 @@
         <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/pytorch-soft-actor-critic" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -67,7 +66,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "master",
     "last_opened_file_path": "C:/IST/Tese/Thesis-Project",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -88,7 +87,7 @@
       <recent name="C:\IST\Tese\Thesis-Project" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.coefficientTuning">
+  <component name="RunManager" selected="Python.main_skip">
     <configuration name="coefficientTuning" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Thesis-Project" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -222,7 +221,7 @@
       <workItem from="1699287534934" duration="4663000" />
       <workItem from="1699377389471" duration="2827000" />
       <workItem from="1699398898619" duration="888000" />
-      <workItem from="1699450176543" duration="17883000" />
+      <workItem from="1699450176543" duration="18179000" />
     </task>
     <task id="LOCAL-00001" summary="Pure Pursuit attempt">
       <created>1682625544496</created>
@@ -396,7 +395,15 @@
       <option name="project" value="LOCAL" />
       <updated>1699381079600</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="Coefficient tuning is working!&#10;&#10;There is a double reset problem somehow&#10;&#10;Created a venv&#10;Added rFactor2 as a separate file making gym_examples useless">
+      <option name="closed" value="true" />
+      <created>1699565351419</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1699565351420</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -433,7 +440,8 @@
     <MESSAGE value="Bugs solved and training is working.&#10;Reward function needs to tweaked as it's letting the agent be rewarding by hard turning left." />
     <MESSAGE value="Even more refactoring done.&#10;&#10;Advanced on reward function coefficients tuning.&#10;&#10;Added file with generated coefficient values and its generator." />
     <MESSAGE value="A few steps forward." />
-    <option name="LAST_COMMIT_MESSAGE" value="A few steps forward." />
+    <MESSAGE value="Coefficient tuning is working!&#10;&#10;There is a double reset problem somehow&#10;&#10;Created a venv&#10;Added rFactor2 as a separate file making gym_examples useless" />
+    <option name="LAST_COMMIT_MESSAGE" value="Coefficient tuning is working!&#10;&#10;There is a double reset problem somehow&#10;&#10;Created a venv&#10;Added rFactor2 as a separate file making gym_examples useless" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Thesis_Project$test.coverage" NAME="test Coverage Results" MODIFIED="1699545716357" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -446,7 +454,7 @@
     <SUITE FILE_PATH="coverage/Thesis_Project$gameControler2.coverage" NAME="gameControler2 Coverage Results" MODIFIED="1695319727429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Thesis_Project$__init__.coverage" NAME="__init__ Coverage Results" MODIFIED="1695723502781" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/envs" />
     <SUITE FILE_PATH="coverage/Thesis_Project$coefficient_generator.coverage" NAME="coefficient_generator Coverage Results" MODIFIED="1699290555351" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Thesis_Project$main_skip.coverage" NAME="main_skip Coverage Results" MODIFIED="1699201975063" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pytorch-soft-actor-critic" />
+    <SUITE FILE_PATH="coverage/Thesis_Project$main_skip.coverage" NAME="main_skip Coverage Results" MODIFIED="1699565384429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pytorch-soft-actor-critic" />
     <SUITE FILE_PATH="coverage/Thesis_Project$rFactor2Environment.coverage" NAME="rFactor2Environment Coverage Results" MODIFIED="1695723240405" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/envs" />
     <SUITE FILE_PATH="coverage/Thesis_Project$rendom.coverage" NAME="rendom Coverage Results" MODIFIED="1698344940540" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Thesis_Project$model.coverage" NAME="model Coverage Results" MODIFIED="1698944594611" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pytorch-soft-actor-critic" />

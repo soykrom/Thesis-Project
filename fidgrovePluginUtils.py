@@ -1,10 +1,12 @@
-import win32event
-import mmap
 import math
-import numpy as np
+import mmap
+import os.path
 import pickle
-import matplotlib.pyplot as plt
 import time
+
+import matplotlib.pyplot as plt
+import numpy as np
+import win32event
 
 # rFactor2 plugin Setup
 telemetryH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0, "WriteEventCarData")
@@ -14,12 +16,20 @@ vehicleScoringH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0, "WriteVeh
 vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", access=mmap.ACCESS_READ)
 
 # Normalization values
-with open('../common/scale_factors.pkl', 'rb') as file:
+with open(os.path.join('C:\\IST\\Tese\\Thesis-Project', 'common/scale_factors.pkl'), 'rb') as file:
     scaling_factors = pickle.load(file)
     min_values = pickle.load(file)
 
+
 # CONSTANTS
 ACTION_TIMEOUT_LIMIT = 1000
+CO_PL, CO_DIST, CO_DONE = 1.3, 2.1, 0.75  # Reward Coefficients default values
+
+
+def load_coefficients(coefficients):
+    global CO_PL, CO_DIST, CO_DONE
+
+    CO_PL, CO_DIST, CO_DONE = coefficients
 
 
 def load_initial(file_path):
@@ -73,22 +83,13 @@ def plot(previous_states_df, agent):
     # Display both subplots using a single plt.show() call
     plt.show()
 
-    with open('../common/lists.pkl', 'wb') as filename:
+    with open(os.path.join('C:\\IST\\Tese\\Thesis-Project', 'common/lists.pkl'), 'wb') as filename:
         pickle.dump(state_samples, filename)
         pickle.dump(actions_steering, filename)
         pickle.dump(actions_throttle, filename)
 
 
-def get_coefficients(file_path):
-    with open(file_path, 'rb') as filename:
-        co_pl = pickle.load(filename)
-        co_dist = pickle.load(filename)
-        co_done = pickle.load(filename)
-
-    return np.array(co_pl, co_dist, co_done)
-
-
-def process_transitions(actions_df, states_df, agent, memory, batch_size, updates_per_step, coefficients=None):
+def process_transitions(actions_df, states_df, agent, memory, batch_size, updates_per_step):
     print("Processing initial transitions")
     timer = time.process_time()
     actions = []
@@ -114,7 +115,7 @@ def process_transitions(actions_df, states_df, agent, memory, batch_size, update
         next_states.append(new_state)
 
         done = episode_finish(prev_state, new_state)
-        reward = calculate_reward(prev_state, new_state, done, coefficients)
+        reward = calculate_reward(prev_state, new_state, done)
 
         memory.push(prev_state, action, reward, new_state, float(not done))
 
@@ -155,19 +156,7 @@ def calculate_heading(x, z):
 
 
 # Calculated based on how much distance was advanced since last state and current velocity
-def calculate_reward(prev_state, state, done, coefficients=None):
-    # Reward coefficients
-    # c_vel = 1.2  # Velocity
-    if coefficients:
-        # Parameter tuning
-        c_pl = coefficients[0]
-        c_dist = coefficients[1]
-        c_done = coefficients[2]
-    else:
-        c_pl = 1.3  # Path Lateral
-        c_dist = 2.1  # Distance
-        c_done = 0.75  # Penalty for finishing before race end
-
+def calculate_reward(prev_state, state, done):
     lap_dist_prev = float(prev_state[5])
     lap_dist_new = float(state[5])
     # vel = float(state[3])
@@ -186,10 +175,9 @@ def calculate_reward(prev_state, state, done, coefficients=None):
     # With coefficient: {c_dist * (lap_dist_new - lap_dist_prev)}")
     # print(f"Path lateral: {abs(pl)}\tWith Coefficient: {c_pl * abs(pl)}")
 
-    reward = c_dist * (lap_dist_new - lap_dist_prev) - \
-             c_pl * abs(pl) - \
-             c_done * penalty
-    # c_vel * vel - \
+    reward = CO_DIST * (lap_dist_new - lap_dist_prev) - \
+             CO_PL * abs(pl) - \
+             CO_DONE * penalty
 
     return reward
 
@@ -208,6 +196,9 @@ def episode_finish(prev_state, state):
     lap_dist_new = float(state[5])
     pl = float(state[6])
 
+    if count == 0:
+        timeout_dist = lap_dist_new
+
     # print(f"Difference: {lap_dist_prev - lap_dist_new}\tPath Lateral: {pl}")
     if count % ACTION_TIMEOUT_LIMIT == 0 and count > 0:
         timeout = abs(timeout_dist - lap_dist_new) < 30
@@ -217,10 +208,16 @@ def episode_finish(prev_state, state):
 
     count += 1
 
-    return (30.0 > lap_dist_prev - lap_dist_new > 0.25) or \
-        abs(pl) >= 8.0 or \
-        (lap_dist_new < 200 and pl > 5.5) or \
-        timeout
+    cond_backwards = 30.0 > lap_dist_prev - lap_dist_new > 0.25
+    cond_pl = abs(pl) >= 8.0
+    cond_start_pl = lap_dist_new < 200 and pl > 5.5
+
+    done = cond_backwards or cond_pl or cond_start_pl or timeout
+    if done:
+        print(f"Backwards: {cond_backwards} ; PL: {cond_pl} ; Start PL: {cond_start_pl}")
+        count = 0
+
+    return done
 
 
 def scale_features(state):

@@ -1,5 +1,5 @@
-import random
 import pickle
+import random
 
 # Number of lists you want to generate
 num_lists = 200

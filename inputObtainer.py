@@ -1,9 +1,11 @@
-import numpy as np
-import pygame
-import time
-import fidgrovePluginUtils as utils
-import pandas
 import argparse
+import time
+
+import numpy as np
+import pandas
+import pygame
+
+import fidgrovePluginUtils as utils
 
 
 def remove_useless_commands(actions, states):

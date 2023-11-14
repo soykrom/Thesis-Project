@@ -24,7 +24,7 @@ class RFactor2Environment(gym.Env):
         self.vjoy_device.set_button(1, 1)
         print("RESET")
 
-        time.sleep(1.0)
+        time.sleep(0.5)
         # Turn reset button off
         self.vjoy_device.set_button(1, 0)
 
@@ -33,6 +33,7 @@ class RFactor2Environment(gym.Env):
         self.prev_state = new_state
 
         self.vjoy_device.data.wAxisX = NEUTRAL_POSITION
+        self.vjoy_device.data.wAxisY = 0
         self.vjoy_device.data.wAxisY = 0
 
         self.vjoy_device.update()
@@ -66,7 +67,7 @@ class RFactor2Environment(gym.Env):
 
         utils.reset_events()
 
-        time.sleep(0.1)
+        time.sleep(0.05)
         return utils.scale_features(new_state), reward, done, False, dict()
 
 

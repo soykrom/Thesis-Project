@@ -2,11 +2,11 @@ import pickle
 import random
 
 # Number of lists you want to generate
-num_lists = 200
+num_lists = 100
 
 # Define the range for each element (min and max values)
-path_lateral = (0.8, 2.0)
-distance = (1.0, 4.0)
+path_lateral = (0.75, 2.0)
+distance = (0.8, 3.0)
 done = (0.5, 1.2)
 
 # List to store the generated lists

@@ -22,7 +22,7 @@ with open(os.path.join('C:\\IST\\Tese\\Thesis-Project', 'common/scale_factors.pk
 
 
 # CONSTANTS
-ACTION_TIMEOUT_LIMIT = 1000
+ACTION_TIMEOUT_LIMIT = 100
 CO_PL, CO_DIST, CO_DONE = 1.3, 2.1, 0.75  # Reward Coefficients default values
 
 
@@ -128,7 +128,7 @@ def process_transitions(actions_df, states_df, agent, memory, batch_size, update
     elapsed_time = time.process_time() - timer
     print(f"Initial inputs and parameter updates finished after {elapsed_time} seconds.")
 
-    plot(previous_states_df, agent)
+    # plot(previous_states_df, agent)
 
     return updates
 
@@ -203,8 +203,6 @@ def episode_finish(prev_state, state):
     if count % ACTION_TIMEOUT_LIMIT == 0 and count > 0:
         timeout = abs(timeout_dist - lap_dist_new) < 30
         timeout_dist = lap_dist_new
-        print("TIMEOUT: ", timeout)
-        print(f"Timeout Dist: {timeout_dist}\tCurrent dist: {lap_dist_new}")
 
     count += 1
 
@@ -212,9 +210,9 @@ def episode_finish(prev_state, state):
     cond_pl = abs(pl) >= 8.0
     cond_start_pl = lap_dist_new < 200 and pl > 5.5
 
-    done = cond_backwards or cond_pl or cond_start_pl or timeout
+    done = cond_pl or cond_start_pl or timeout
     if done:
-        print(f"Backwards: {cond_backwards} ; PL: {cond_pl} ; Start PL: {cond_start_pl}")
+        print(cond_backwards)
         count = 0
 
     return done

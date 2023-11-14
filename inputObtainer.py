@@ -62,7 +62,7 @@ def main():
 
             utils.reset_events()
 
-            time.sleep(0.1)
+            time.sleep(0.05)
 
     except KeyboardInterrupt:
         print("Finishing...")
@@ -75,11 +75,12 @@ def main():
         print(len(actions))
         print(len(state_transitions))
 
+        mode = input("Select mode ('a' - Append or 'w' - Overwrite): ")
         actions_df = pandas.DataFrame(actions, columns=['Steering', 'Throttle'])
-        actions_df.to_csv('inputs.csv', index=False)
+        actions_df.to_csv('common/inputs.csv', mode=mode, index=False)
 
         states_df = pandas.DataFrame(state_transitions, columns=['Previous State', 'New State'])
-        states_df.to_csv('transitions.csv', index=False)
+        states_df.to_csv('common/transitions.csv', mode=mode, index=False)
 
 
 if __name__ == "__main__":

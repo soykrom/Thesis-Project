@@ -2,39 +2,41 @@ import pickle
 import subprocess
 
 with open('common/coefficients.pkl', 'rb') as file:
-    co_list_pl = pickle.load(file)
-    co_list_dist = pickle.load(file)
-    co_list_done = pickle.load(file)
+    co_list = pickle.load(file)
 
 count = 0
 reward_list = []
-for co_pl, co_dist, co_done in zip(co_list_pl, co_list_dist, co_list_done):
+for coefficient in reversed(co_list):
     count += 1
-    print(co_pl)
-    print(co_dist)
-    print(co_done)
-    command = f'C:\\IST\\Tese\\Thesis-Project\\pytorch-soft-actor-critic\\main.py \
-    --coefficients {co_pl} {co_dist} {co_done}'
+    print(coefficient[0])
+    print(coefficient[1])
+    print(coefficient[2])
+
+    command = f'D:\\IST\\Tese\\Thesis-Project\\pytorch-soft-actor-critic\\main.py \
+    --coefficients {coefficient[0]} {coefficient[1]} {coefficient[2]}'
 
     print(command + '\n' + "Count: ", count)
     # Run process
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                universal_newlines=True)
 
+    output = []
     # Prints output as the command runs
     while True:
-        output = process.stdout.readline()
-        if output == '' and process.poll() is not None:
+        # Read line from standard output
+        output_line = process.stdout.readline()
+        if output_line == '' and process.poll() is not None:
             break
-        if output:
-            print(output.strip())
+        if output_line:
+            print(output_line.strip())
+            output.append(output_line.strip())
 
     # Final reward
-    avg_reward, _ = process.communicate()
+    avg_reward = output[-1]
+    print("Reward:", avg_reward)
 
-    reward_list.append([[co_pl, co_dist, co_done], avg_reward])
+    reward_list.append([coefficient, avg_reward])
 
-    print("Reward:", avg_reward.strip())
-
-    with open('common/rewards.pkl', 'ab') as filename:
+    with open('common/rewards.pkl', 'wb') as filename:
         pickle.dump(reward_list, filename)
+

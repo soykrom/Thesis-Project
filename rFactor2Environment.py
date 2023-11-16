@@ -51,7 +51,6 @@ class RFactor2Environment(gym.Env):
         self.vjoy_device.data.wAxisY = int(NEUTRAL_POSITION + float(action[1]) * NEUTRAL_POSITION)
 
         self.vjoy_device.update()
-        # print(f"AxisX: {self.vjoy_device.data.wAxisX}\tAxisY: {self.vjoy_device.data.wAxisY}")
 
         # Obtain in-game data (after action execution, it waits until the info is received)
         new_state = utils.obtain_state()

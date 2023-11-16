@@ -1,31 +1,33 @@
 import pickle
-import random
 
 # Number of lists you want to generate
-num_lists = 100
+from itertools import product
 
 # Define the range for each element (min and max values)
-path_lateral = (0.75, 2.0)
-distance = (0.8, 3.0)
-done = (0.5, 1.2)
+path_lateral_range = (0.75, 2.0)
+distance_range = (1.0, 2.5)
+done_range = (0.5, 1.2)
 
-# List to store the generated lists
-generated_list_pl = []
-generated_list_dist = []
-generated_list_done = []
+# Define the number of values to generate for each parameter
+num_values = 4  # You can adjust this based on your preference
 
-for _ in range(num_lists):
-    # Generate random floats within the specified ranges
-    element1 = round(random.uniform(path_lateral[0], path_lateral[1]), 2)
-    element2 = round(random.uniform(distance[0], distance[1]), 2)
-    element3 = round(random.uniform(done[0], done[1]), 2)
+# Generate values at intervals for each parameter
+path_lateral_values = [round(val, 2) for val in
+                       sorted(set([path_lateral_range[0] + i * (path_lateral_range[1] - path_lateral_range[0]) /
+                                  (num_values - 1) for i in range(num_values)]))]
 
-    # Create a list with the generated elements
-    generated_list_pl.append(element1)
-    generated_list_dist.append(element2)
-    generated_list_done.append(element3)
+distance_values = [round(val, 2) for val in
+                   sorted(set([distance_range[0] + i * (distance_range[1] - distance_range[0]) /
+                              (num_values - 1) for i in range(num_values)]))]
 
+done_values = [round(val, 2) for val in
+               sorted(set([done_range[0] + i * (done_range[1] - done_range[0]) /
+                          (num_values - 1) for i in range(num_values)]))]
+
+# Generate combinations of parameter values
+combinations = list(product(path_lateral_values, distance_values, done_values))
+
+print(combinations)
 with open('common/coefficients.pkl', 'wb') as filename:
-    pickle.dump(generated_list_pl, filename)
-    pickle.dump(generated_list_dist, filename)
-    pickle.dump(generated_list_done, filename)
+    pickle.dump(combinations, filename)
+

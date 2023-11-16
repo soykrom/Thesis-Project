@@ -15,15 +15,15 @@ telemetryMMfile = mmap.mmap(-1, length=80, tagname="MyFileMappingCarData", acces
 vehicleScoringH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0, "WriteVehicleScoring")
 vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", access=mmap.ACCESS_READ)
 
-# Normalization values
-with open(os.path.join('C:\\IST\\Tese\\Thesis-Project', 'common/scale_factors.pkl'), 'rb') as file:
-    scaling_factors = pickle.load(file)
-    min_values = pickle.load(file)
-
-
 # CONSTANTS
 ACTION_TIMEOUT_LIMIT = 100
-CO_PL, CO_DIST, CO_DONE = 1.3, 2.1, 0.75  # Reward Coefficients default values
+CO_PL, CO_DIST, CO_DONE = 1.1, 2.3, 0.75  # Reward Coefficients default values
+PATH = 'D:\\IST\\Tese\\Thesis-Project'
+
+# Normalization values
+with open(os.path.join(PATH, 'common/scale_factors.pkl'), 'rb') as file:
+    scaling_factors = pickle.load(file)
+    min_values = pickle.load(file)
 
 
 def load_coefficients(coefficients):
@@ -83,7 +83,7 @@ def plot(previous_states_df, agent):
     # Display both subplots using a single plt.show() call
     plt.show()
 
-    with open(os.path.join('C:\\IST\\Tese\\Thesis-Project', 'common/lists.pkl'), 'wb') as filename:
+    with open(os.path.join(PATH, 'common/lists.pkl'), 'wb') as filename:
         pickle.dump(state_samples, filename)
         pickle.dump(actions_steering, filename)
         pickle.dump(actions_throttle, filename)
@@ -212,7 +212,10 @@ def episode_finish(prev_state, state):
 
     done = cond_pl or cond_start_pl or timeout
     if done:
-        print(cond_backwards)
+        print("PL: ", cond_pl)
+        print("Start: ", cond_start_pl)
+        print("Backwards: ", cond_backwards)
+        print("Timeout: ", timeout)
         count = 0
 
     return done

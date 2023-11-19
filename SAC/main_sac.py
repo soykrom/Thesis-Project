@@ -1,4 +1,3 @@
-import pybullet_envs
 import gym
 import numpy as np
 from sac_torch import Agent
@@ -23,7 +22,7 @@ if __name__ == '__main__':
 
     if load_checkpoint:
         agent.load_models()
-        env.render(mode='human')
+        env.render()
 
     for i in range(n_games):
         observation = env.reset()

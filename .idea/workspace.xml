@@ -4,22 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fb068fdc-e707-41d6-85c9-868366522b91" name="Changes" comment="Can extract inputs. Need to make an input file and fix what comes after but THEORETICALLY... it works?">
-      <change afterPath="$PROJECT_DIR$/.idea/Thesis-Project.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="fb068fdc-e707-41d6-85c9-868366522b91" name="Changes" comment="Able to run everything.&#10;&#10;Updated Fidgrove_Race_Engineer.dll&#10;&#10;pytorch-soft-actor-critic Added">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fidgrove_Race_Engineer.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Fidgrove_Race_Engineer.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/coefficientTuning.py" beforeDir="false" afterPath="$PROJECT_DIR$/coefficientTuning.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/coefficient_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/coefficient_generator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/coefficients.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/common/coefficients.pkl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/initial_training.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/common/initial_training.pkl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fidgrovePluginUtils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fidgrovePluginUtils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytorch-soft-actor-critic" beforeDir="false" afterPath="$PROJECT_DIR$/pytorch-soft-actor-critic" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytorch-soft-actor-critic/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/pytorch-soft-actor-critic/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rFactor2Environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/rFactor2Environment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +25,7 @@
         <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/pytorch-soft-actor-critic" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -282,7 +268,8 @@
       <workItem from="1699973170540" duration="510000" />
       <workItem from="1700014440441" duration="501000" />
       <workItem from="1700014954037" duration="404000" />
-      <workItem from="1700015373733" duration="12245000" />
+      <workItem from="1700015373733" duration="12907000" />
+      <workItem from="1700417565727" duration="1341000" />
     </task>
     <task id="LOCAL-00001" summary="Pure Pursuit attempt">
       <created>1682625544496</created>
@@ -472,7 +459,14 @@
       <option name="project" value="LOCAL" />
       <updated>1699565440936</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="Able to run everything.&#10;&#10;Updated Fidgrove_Race_Engineer.dll&#10;&#10;pytorch-soft-actor-critic Added">
+      <created>1700130898539</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1700130898539</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -511,7 +505,8 @@
     <MESSAGE value="A few steps forward." />
     <MESSAGE value="Coefficient tuning is working!&#10;&#10;There is a double reset problem somehow&#10;&#10;Created a venv&#10;Added rFactor2 as a separate file making gym_examples useless" />
     <MESSAGE value="Removed gym_examples" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed gym_examples" />
+    <MESSAGE value="Able to run everything.&#10;&#10;Updated Fidgrove_Race_Engineer.dll&#10;&#10;pytorch-soft-actor-critic Added" />
+    <option name="LAST_COMMIT_MESSAGE" value="Able to run everything.&#10;&#10;Updated Fidgrove_Race_Engineer.dll&#10;&#10;pytorch-soft-actor-critic Added" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Thesis_Project$coefficient_generator.coverage" NAME="coefficient_generator Coverage Results" MODIFIED="1700074840668" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

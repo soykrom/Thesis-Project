@@ -18,7 +18,7 @@ vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", 
 # CONSTANTS
 ACTION_TIMEOUT_LIMIT = 100
 CO_PL, CO_DIST, CO_DONE = 1.1, 2.3, 0.75  # Reward Coefficients default values
-PATH = 'D:\\IST\\Tese\\Thesis-Project'
+PATH = 'C:\\IST\\Tese\\Thesis-Project'
 
 # Normalization values
 with open(os.path.join(PATH, 'common/scale_factors.pkl'), 'rb') as file:

@@ -17,7 +17,7 @@ vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", 
 
 # CONSTANTS
 ACTION_TIMEOUT_LIMIT = 100
-CO_PL, CO_DIST, CO_DONE = 1.1, 2.3, 0.75  # Reward Coefficients default values
+CO_PL, CO_DIST, CO_DONE = 1.4, 2.0, 0.75  # Reward Coefficients default values
 PATH = 'C:\\IST\\Tese\\Thesis-Project'
 
 # Normalization values
@@ -35,22 +35,21 @@ def load_coefficients(coefficients):
 def load_initial(file_path):
     with open(file_path, 'rb') as filename:
         agent = pickle.load(filename)
-        memory = pickle.load(filename)
 
-    return agent, memory
+    return agent
 
 
-def save_initial(file_path, agent, memory):
+def save_initial(file_path, agent):
     with open(file_path, 'wb') as filename:
         pickle.dump(agent, filename)
-        pickle.dump(memory, filename)
 
 
 def plot(previous_states_df, agent):
+    print("Plotting...")
     num_samples = len(previous_states_df)
 
     selected_indices = np.random.choice(len(np.array(previous_states_df)), num_samples, replace=False)
-    state_samples = [np.array(previous_states_df)[i] for i in selected_indices]
+    state_samples = np.array([np.array(previous_states_df)[i] for i in selected_indices], dtype=float)
 
     # Initialize arrays to store the action values for each state
     actions_steering = np.zeros(num_samples)
@@ -58,8 +57,7 @@ def plot(previous_states_df, agent):
 
     # Calculate the actions for each state based on your policy
     for i in range(num_samples):
-        state = np.array(state_samples[i], dtype=float)
-        action = agent.select_action(state)
+        action = agent.choose_action(state_samples[i])
 
         actions_steering[i] = action[0]
         actions_throttle[i] = action[1]
@@ -89,7 +87,7 @@ def plot(previous_states_df, agent):
         pickle.dump(actions_throttle, filename)
 
 
-def process_transitions(actions_df, states_df, agent, memory, batch_size, updates_per_step):
+def process_transitions(actions_df, states_df, agent):
     print("Processing initial transitions")
     timer = time.process_time()
     actions = []
@@ -102,10 +100,6 @@ def process_transitions(actions_df, states_df, agent, memory, batch_size, update
 
     for index, action in actions_df.iterrows():
         action = np.array(action)
-        if action.ndim == 1:
-            action = [action]
-        else:
-            action = action.tolist()
 
         prev_state = np.array(previous_states_df[index], dtype=float)
         new_state = np.array(new_states_df[index], dtype=float)
@@ -117,18 +111,16 @@ def process_transitions(actions_df, states_df, agent, memory, batch_size, update
         done = episode_finish(prev_state, new_state)
         reward = calculate_reward(prev_state, new_state, done)
 
-        memory.push(prev_state, action, reward, new_state, float(not done))
+        agent.remember(prev_state, action, reward, new_state, done)
 
-        if len(memory) > batch_size:
-            for i in range(updates_per_step):
-                # Update parameters of all the networks
-                agent.update_parameters(memory, batch_size, updates)
-                updates += 1
+        # Update parameters of all the networks
+        agent.learn()
+        updates += 1
 
     elapsed_time = time.process_time() - timer
     print(f"Initial inputs and parameter updates finished after {elapsed_time} seconds.")
 
-    # plot(previous_states_df, agent)
+    plot(previous_states_df, agent)
 
     return updates
 

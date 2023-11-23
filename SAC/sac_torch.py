@@ -27,7 +27,7 @@ class Agent:
         self.update_network_parameters(tau=1)
 
     def choose_action(self, observation):
-        state = T.Tensor([observation]).to(self.actor.device)
+        state = T.  Tensor(observation).to(self.actor.device)
         actions, _ = self.actor.sample_normal(state, reparameterize=False)
 
         return actions.cpu().detach().numpy()[0]
@@ -74,11 +74,11 @@ class Agent:
         state, action, reward, new_state, done = \
             self.memory.sample_buffer(self.batch_size)
 
-        reward = T.tensor(reward, dtype=T.float).to(self.actor.device)
+        reward = T.tensor(reward, dtype=T.float32).to(self.actor.device)
         done = T.tensor(done).to(self.actor.device)
-        state_ = T.tensor(new_state, dtype=T.float).to(self.actor.device)
-        state = T.tensor(state, dtype=T.float).to(self.actor.device)
-        action = T.tensor(action, dtype=T.float).to(self.actor.device)
+        state_ = T.tensor(new_state, dtype=T.float32).to(self.actor.device)
+        state = T.tensor(state, dtype=T.float32).to(self.actor.device)
+        action = T.tensor(action, dtype=T.float32).to(self.actor.device)
 
         value = self.value(state).view(-1)
         value_ = self.target_value(state_).view(-1)
@@ -86,6 +86,7 @@ class Agent:
 
         actions, log_probs = self.actor.sample_normal(state, reparameterize=False)
         log_probs = log_probs.view(-1)
+
         q1_new_policy = self.critic_1.forward(state, actions)
         q2_new_policy = self.critic_2.forward(state, actions)
         critic_value = T.min(q1_new_policy, q2_new_policy)

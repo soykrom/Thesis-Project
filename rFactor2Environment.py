@@ -12,7 +12,7 @@ NEUTRAL_POSITION = 16384
 class RFactor2Environment(gym.Env):
     def __init__(self):
         # Steering and Acceleration
-        self.action_space = spaces.Box(-1.0, 1.0, shape=(1, 2), dtype=float)
+        self.action_space = spaces.Box(-1.0, 1.0, shape=(2,), dtype=float)
         self.observation_space = spaces.Box(-1.0, 1.0, shape=(7,), dtype=float)
         # Vjoy Device
         self.vjoy_device = pyvjoy.VJoyDevice(1)
@@ -52,6 +52,8 @@ class RFactor2Environment(gym.Env):
 
         self.vjoy_device.update()
 
+        print(f"Steering: {self.vjoy_device.data.wAxisX}\tThrottle: {self.vjoy_device.data.wAxisY}")
+
         # Obtain in-game data (after action execution, it waits until the info is received)
         new_state = utils.obtain_state()
 
@@ -60,9 +62,6 @@ class RFactor2Environment(gym.Env):
 
         done = utils.episode_finish(self.prev_state, new_state)
         reward = utils.calculate_reward(self.prev_state, new_state, done)
-
-        if done:
-            self.reset()
 
         utils.reset_events()
 

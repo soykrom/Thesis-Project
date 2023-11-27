@@ -10,9 +10,9 @@ if __name__ == '__main__':
     agent = Agent(input_dims=env.observation_space.shape, env=env,
             n_actions=env.action_space.shape[0])
     n_games = 250
-    # uncomment this line and do a mkdir tmp && mkdir tmp/video if you want to
+    # uncomment this line and do a mkdir models && mkdir models/video if you want to
     # record video of the agent playing the game.
-    #env = wrappers.Monitor(env, 'tmp/video', video_callable=lambda episode_id: True, force=True)
+    #env = wrappers.Monitor(env, 'models/video', video_callable=lambda episode_id: True, force=True)
     filename = 'inverted_pendulum.png'
 
     figure_file = 'plots/' + filename

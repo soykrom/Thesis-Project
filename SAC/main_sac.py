@@ -12,7 +12,7 @@ import fidgrovePluginUtils as utils
 import rFactor2Environment
 
 # CONSTANTS
-PATH = 'C:\\IST\\Tese\\Thesis-Project'
+PATH = 'D:\\IST\\Tese\\Thesis-Project'
 
 
 def parse_args():
@@ -62,9 +62,9 @@ if __name__ == '__main__':
                   batch_size=args.batch_size)
     n_episodes = args.n_episodes
 
-    # uncomment this line and do a mkdir tmp && mkdir video if you want to
+    # uncomment this line and do a mkdir models && mkdir video if you want to
     # record video of the agent playing the game.
-    # env = wrappers.Monitor(env, 'tmp/video', video_callable=lambda episode_id: True, force=True)
+    # env = wrappers.Monitor(env, 'models/video', video_callable=lambda episode_id: True, force=True)
     filename = 'inverted_pendulum.png'
     figure_file = 'plots/' + filename
 
@@ -77,13 +77,17 @@ if __name__ == '__main__':
 
     if args.skip_initial:
         updates = 0
-        print(updates)
         agent = utils.load_initial(args.training_file)
+        states_df = pandas.read_csv(args.states_file)
+        print(states_df)
+        utils.plot(states_df['Previous State'].apply(lambda y: y.strip('[]').split(',')), agent)
     else:
+        states_df = pandas.read_csv(args.states_file)
         updates = utils.process_transitions(pandas.read_csv(args.input_file, header=1),
-                                            pandas.read_csv(args.states_file),
+                                            states_df,
                                             agent)
         utils.save_initial(args.training_file, agent)
+        utils.plot(states_df['Previous State'].apply(lambda y: y.strip('[]').split(',')), agent)
 
     for i in range(n_episodes):
         observation = env.reset()[0]

@@ -17,8 +17,8 @@ vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", 
 
 # CONSTANTS
 ACTION_TIMEOUT_LIMIT = 100
-CO_PL, CO_DIST, CO_DONE = 1.4, 2.0, 0.75  # Reward Coefficients default values
-PATH = 'C:\\IST\\Tese\\Thesis-Project'
+CO_PL, CO_DIST, CO_DONE = 1.0, 1.7, 0.75  # Reward Coefficients default values
+PATH = 'D:\\IST\\Tese\\Thesis-Project'
 
 # Normalization values
 with open(os.path.join(PATH, 'common/scale_factors.pkl'), 'rb') as file:
@@ -33,6 +33,7 @@ def load_coefficients(coefficients):
 
 
 def load_initial(file_path):
+    print("Loading training file")
     with open(file_path, 'rb') as filename:
         agent = pickle.load(filename)
 
@@ -40,6 +41,7 @@ def load_initial(file_path):
 
 
 def save_initial(file_path, agent):
+    print("Saving training file")
     with open(file_path, 'wb') as filename:
         pickle.dump(agent, filename)
 
@@ -120,8 +122,6 @@ def process_transitions(actions_df, states_df, agent):
     elapsed_time = time.process_time() - timer
     print(f"Initial inputs and parameter updates finished after {elapsed_time} seconds.")
 
-    plot(previous_states_df, agent)
-
     return updates
 
 
@@ -198,15 +198,13 @@ def episode_finish(prev_state, state):
 
     count += 1
 
-    cond_backwards = 30.0 > lap_dist_prev - lap_dist_new > 0.25
     cond_pl = abs(pl) >= 8.0
     cond_start_pl = lap_dist_new < 200 and pl > 5.5
 
-    done = cond_pl or cond_start_pl or timeout
+    done = (cond_pl or cond_start_pl or timeout) and count < 20
     if done:
         print("PL: ", cond_pl)
         print("Start: ", cond_start_pl)
-        print("Backwards: ", cond_backwards)
         print("Timeout: ", timeout)
         count = 0
 

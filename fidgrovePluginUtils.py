@@ -18,10 +18,9 @@ vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", 
 # CONSTANTS
 ACTION_TIMEOUT_LIMIT = 100
 CO_PL, CO_DIST, CO_DONE = 1.0, 1.7, 0.75  # Reward Coefficients default values
-PATH = 'D:\\IST\\Tese\\Thesis-Project'
 
 # Normalization values
-with open(os.path.join(PATH, 'common/scale_factors.pkl'), 'rb') as file:
+with open(os.path.abspath('common/scale_factors.pkl'), 'rb') as file:
     scaling_factors = pickle.load(file)
     min_values = pickle.load(file)
 
@@ -83,7 +82,7 @@ def plot(previous_states_df, agent):
     # Display both subplots using a single plt.show() call
     plt.show()
 
-    with open(os.path.join(PATH, 'common/lists.pkl'), 'wb') as filename:
+    with open(os.path.join('common/lists.pkl'), 'wb') as filename:
         pickle.dump(state_samples, filename)
         pickle.dump(actions_steering, filename)
         pickle.dump(actions_throttle, filename)
@@ -110,7 +109,7 @@ def process_transitions(actions_df, states_df, agent):
         prev_states.append(prev_state)
         next_states.append(new_state)
 
-        done = episode_finish(prev_state, new_state)
+        done = episode_finish(new_state)
         reward = calculate_reward(prev_state, new_state, done)
 
         agent.remember(prev_state, action, reward, new_state, done)
@@ -180,11 +179,10 @@ count = 0
 timeout_dist = 0
 
 
-def episode_finish(prev_state, state):
+def episode_finish(state):
     timeout = False
     global count
     global timeout_dist
-    lap_dist_prev = float(prev_state[5])
     lap_dist_new = float(state[5])
     pl = float(state[6])
 

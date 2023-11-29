@@ -11,9 +11,6 @@ from gym import wrappers
 import fidgrovePluginUtils as utils
 import rFactor2Environment
 
-# CONSTANTS
-PATH = 'D:\\IST\\Tese\\Thesis-Project'
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description='PyTorch Soft Actor-Critic Args')
@@ -37,12 +34,12 @@ def parse_args():
     parser.add_argument('--replay_size', type=int, default=1000000, metavar='N',
                         help='size of replay buffer (default: 10000000)')
     parser.add_argument('--epsilon', type=float, default=0.10, help='epsilon for epsilon greedy (default: 0.10')
-    parser.add_argument('--input_file', default=os.path.join(PATH, 'common/inputs.csv'), help='file name with\
+    parser.add_argument('--input_file', default=os.path.abspath('common/inputs.csv'), help='file name with\
                                                                                          initial inputs')
-    parser.add_argument('--states_file', default=os.path.join(PATH, 'common/transitions.csv'), help='file name with\
+    parser.add_argument('--states_file', default=os.path.abspath('common/transitions.csv'), help='file name with\
                                                                             state transitions of initial inputs')
     parser.add_argument('--skip_initial', type=bool, default=False, help='skip initial transitions training')
-    parser.add_argument('--training_file', default=os.path.join(PATH, 'common/initial_training.pkl'),
+    parser.add_argument('--training_file', default=os.path.abspath('common/initial_training.pkl'),
                         help='file name with training inputs')
     parser.add_argument('--coefficients', nargs=3, type=float, default=None, help='to be used coefficients')
 
@@ -72,14 +69,10 @@ if __name__ == '__main__':
     score_history = []
     load_checkpoint = False
 
-    if load_checkpoint:
-        agent.load_models()
-
     if args.skip_initial:
         updates = 0
-        agent = utils.load_initial(args.training_file)
+        agent.load_models()
         states_df = pandas.read_csv(args.states_file)
-        print(states_df)
         utils.plot(states_df['Previous State'].apply(lambda y: y.strip('[]').split(',')), agent)
     else:
         states_df = pandas.read_csv(args.states_file)

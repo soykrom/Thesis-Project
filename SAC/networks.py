@@ -4,12 +4,11 @@ import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
 from torch.distributions.normal import Normal
-import numpy as np
 
 
 class CriticNetwork(nn.Module):
     def __init__(self, beta, input_dims, n_actions, fc1_dims=256, fc2_dims=256,
-                 name='critic', chkpt_dir='models'):
+                 name='critic', chkpt_dir=os.path.abspath('SAC\\models')):
         super(CriticNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -47,7 +46,7 @@ class CriticNetwork(nn.Module):
 
 class ValueNetwork(nn.Module):
     def __init__(self, beta, input_dims, fc1_dims=256, fc2_dims=256,
-                 name='value', chkpt_dir='models\sac'):
+                 name='value', chkpt_dir=os.path.abspath('SAC\\models\\sac')):
         super(ValueNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -84,7 +83,8 @@ class ValueNetwork(nn.Module):
 
 class ActorNetwork(nn.Module):
     def __init__(self, alpha, input_dims, max_action, fc1_dims=256,
-                 fc2_dims=256, n_actions=2, name='actor', chkpt_dir='models\sac'):
+                 fc2_dims=256, n_actions=2, name='actor', chkpt_dir=os.path.abspath('SAC\\models\\sac')):
+        print("Max Action: ", max_action)
         super(ActorNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -128,6 +128,7 @@ class ActorNetwork(nn.Module):
         else:
             actions = probabilities.sample()
 
+        print("Actions: ", actions)
         action = T.tanh(actions) * T.tensor(self.max_action).to(self.device)
         log_probs = probabilities.log_prob(actions)
         log_probs -= T.log(1 - action.pow(2) + self.reparam_noise)

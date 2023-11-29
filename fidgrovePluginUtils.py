@@ -186,6 +186,7 @@ def episode_finish(state):
     lap_dist_new = float(state[5])
     pl = float(state[6])
 
+
     if count == 0:
         timeout_dist = lap_dist_new
 

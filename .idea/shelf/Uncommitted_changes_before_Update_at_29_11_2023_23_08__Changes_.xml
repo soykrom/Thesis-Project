@@ -1,0 +1,34 @@
+<changelist name="Uncommitted_changes_before_Update_at_29_11_2023_23_08_[Changes]" date="1701299329438" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2023_23_08_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 29/11/2023 23:08 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="common/lists.pkl" />
+    <option name="AFTER_PATH" value="common/lists.pkl" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2023_23_08_[Changes]/lists.pkl" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="SAC/models/critic_1_sac" />
+    <option name="AFTER_PATH" value="SAC/models/critic_1_sac" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2023_23_08_[Changes]/critic_1_sac" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="SAC/models/sac/target_value_sac" />
+    <option name="AFTER_PATH" value="SAC/models/sac/target_value_sac" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2023_23_08_[Changes]/target_value_sac" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="SAC/models/sac/actor_sac" />
+    <option name="AFTER_PATH" value="SAC/models/sac/actor_sac" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2023_23_08_[Changes]/actor_sac" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="SAC/models/sac/value_sac" />
+    <option name="AFTER_PATH" value="SAC/models/sac/value_sac" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2023_23_08_[Changes]/value_sac" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="SAC/models/critic_2_sac" />
+    <option name="AFTER_PATH" value="SAC/models/critic_2_sac" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2023_23_08_[Changes]/critic_2_sac" />
+  </binary>
+</changelist>

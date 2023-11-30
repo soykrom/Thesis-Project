@@ -1,7 +1,7 @@
 import os
 
 # Get the absolute path to the script
-script_path = os.path.abspath('actor_sac')
+script_path = os.path.abspath('epic')
 print("Script Path:", script_path)
 
 # Get the directory containing the script

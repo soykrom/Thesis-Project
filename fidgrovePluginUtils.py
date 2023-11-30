@@ -180,7 +180,7 @@ timeout_dist = 0
 
 
 def episode_finish(state):
-    timeout = False
+    cond_timeout = False
     global count
     global timeout_dist
     lap_dist_new = float(state[5])
@@ -190,21 +190,21 @@ def episode_finish(state):
     if count == 0:
         timeout_dist = lap_dist_new
 
-    # print(f"Difference: {lap_dist_prev - lap_dist_new}\tPath Lateral: {pl}")
-    if count % ACTION_TIMEOUT_LIMIT == 0 and count > 0:
-        timeout = abs(timeout_dist - lap_dist_new) < 30
-        timeout_dist = lap_dist_new
-
     count += 1
+
+    # print(f"Difference: {lap_dist_prev - lap_dist_new}\tPath Lateral: {pl}")
+    if count % ACTION_TIMEOUT_LIMIT == 0:
+        cond_timeout = abs(timeout_dist - lap_dist_new) < 30
+        timeout_dist = lap_dist_new
 
     cond_pl = abs(pl) >= 8.0
     cond_start_pl = lap_dist_new < 200 and pl > 5.5
 
-    done = (cond_pl or cond_start_pl or timeout) and count < 20
+    done = (cond_pl or cond_start_pl or cond_timeout) and count > 20
     if done:
         print("PL: ", cond_pl)
         print("Start: ", cond_start_pl)
-        print("Timeout: ", timeout)
+        print("Timeout: ", cond_timeout)
         count = 0
 
     return done

@@ -1,4 +1,5 @@
 import argparse
+import os.path
 import time
 
 import numpy as np
@@ -77,10 +78,10 @@ def main():
 
         mode = input("Select mode ('a' - Append or 'w' - Overwrite): ")
         actions_df = pandas.DataFrame(actions, columns=['Steering', 'Throttle'])
-        actions_df.to_csv('common/inputs.csv', mode=mode, index=False)
+        actions_df.to_csv(os.path.abspath('common/inputs.csv'), mode=mode, index=False)
 
         states_df = pandas.DataFrame(state_transitions, columns=['Previous State', 'New State'])
-        states_df.to_csv('common/transitions.csv', mode=mode, index=False)
+        states_df.to_csv(os.path.abspath('common/transitions.csv'), mode=mode, index=False)
 
 
 if __name__ == "__main__":

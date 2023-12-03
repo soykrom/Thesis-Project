@@ -84,7 +84,6 @@ class ValueNetwork(nn.Module):
 class ActorNetwork(nn.Module):
     def __init__(self, alpha, input_dims, max_action, fc1_dims=256,
                  fc2_dims=256, n_actions=2, name='actor', chkpt_dir=os.path.abspath('SAC\\models\\sac')):
-        print("Max Action: ", max_action)
         super(ActorNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -115,12 +114,13 @@ class ActorNetwork(nn.Module):
         mu = self.mu(prob)
         sigma = self.sigma(prob)
 
-        sigma = T.clamp(sigma, min=self.reparam_noise, max=1)
+        sigma = T.clamp(sigma, min=self.reparam_noise, max=2)
 
         return mu, sigma
 
     def sample_normal(self, state, reparameterize=True):
         mu, sigma = self.forward(state)
+
         probabilities = Normal(mu, sigma)
 
         if reparameterize:
@@ -128,7 +128,6 @@ class ActorNetwork(nn.Module):
         else:
             actions = probabilities.sample()
 
-        print("Actions: ", actions)
         action = T.tanh(actions) * T.tensor(self.max_action).to(self.device)
         log_probs = probabilities.log_prob(actions)
         log_probs -= T.log(1 - action.pow(2) + self.reparam_noise)

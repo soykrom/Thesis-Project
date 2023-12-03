@@ -44,6 +44,7 @@ class RFactor2Environment(gym.Env):
 
     def step(self, action):
         # Execute the action using VJoy
+        print("Action in Step: ", action)
         if action.ndim > 1:
             action = action[0]
 

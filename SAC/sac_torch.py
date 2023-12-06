@@ -48,7 +48,6 @@ class Agent:
         for name in value_state_dict:
             value_state_dict[name] = tau * value_state_dict[name].clone() + \
                                      (1 - tau) * target_value_state_dict[name].clone()
-            print(f"Name: {name}\tValue (?): {tau * value_state_dict[name].clone() + (1 - tau) * target_value_state_dict[name].clone()}")
 
         self.target_value.load_state_dict(value_state_dict)
 
@@ -85,38 +84,10 @@ class Agent:
         value_ = self.target_value(state_).view(-1)
         value_[done] = 0.0
 
-        # Value network loss
-        actions, log_probs = self.actor.sample_normal(state, reparameterize=False)
-        log_probs = log_probs.view(-1)
-
-        q1_new_policy = self.critic_1.forward(state, actions)
-        q2_new_policy = self.critic_2.forward(state, actions)
-        critic_value = T.min(q1_new_policy, q2_new_policy)
-        critic_value = critic_value.view(-1)
-
-        self.value.optimizer.zero_grad()
-        value_target = critic_value - log_probs
-        value_loss = 0.5 * F.mse_loss(value, value_target)
-        value_loss.backward(retain_graph=True)
-        self.value.optimizer.step()
-
-        # Actor network loss
-        actions, log_probs = self.actor.sample_normal(state, reparameterize=True)
-        log_probs = log_probs.view(-1)
-        q1_new_policy = self.critic_1.forward(state, actions)
-        q2_new_policy = self.critic_2.forward(state, actions)
-        critic_value = T.min(q1_new_policy, q2_new_policy)
-        critic_value = critic_value.view(-1)
-
-        actor_loss = log_probs - critic_value
-        actor_loss = T.mean(actor_loss)
-        self.actor.optimizer.zero_grad()
-        actor_loss.backward(retain_graph=True)
-        self.actor.optimizer.step()
-
         # Critic network loss
         self.critic_1.optimizer.zero_grad()
         self.critic_2.optimizer.zero_grad()
+
         q_hat = self.scale * reward + self.gamma * value_
         q1_old_policy = self.critic_1.forward(state, action).view(-1)
         q2_old_policy = self.critic_2.forward(state, action).view(-1)
@@ -129,3 +100,35 @@ class Agent:
         self.critic_2.optimizer.step()
 
         self.update_network_parameters()
+
+        # Value network loss
+        actions, log_probs = self.actor.sample_normal(state, reparameterize=False)
+        log_probs = log_probs.view(-1)
+
+        critic_value = self.obtain_critic_value(state, actions)
+
+        self.value.optimizer.zero_grad()
+        value_target = critic_value - log_probs
+        value_loss = 0.5 * F.mse_loss(value, value_target)
+        value_loss.backward(retain_graph=True)
+        self.value.optimizer.step()
+
+        # Actor network loss
+        actions, log_probs = self.actor.sample_normal(state, reparameterize=True)
+        log_probs = log_probs.view(-1)
+
+        critic_value = self.obtain_critic_value(state, actions)
+
+        self.actor.optimizer.zero_grad()
+        actor_loss = log_probs - critic_value
+        actor_loss = T.mean(actor_loss)
+        actor_loss.backward(retain_graph=True)
+        self.actor.optimizer.step()
+
+    def obtain_critic_value(self, state, actions):
+        q1_new_policy = self.critic_1.forward(state, actions)
+        q2_new_policy = self.critic_2.forward(state, actions)
+        critic_value = T.min(q1_new_policy, q2_new_policy)
+        critic_value = critic_value.view(-1)
+
+        return critic_value

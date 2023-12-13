@@ -49,7 +49,9 @@ class RFactor2Environment(gym.Env):
             action = action[0]
 
         self.vjoy_device.data.wAxisX = int(NEUTRAL_POSITION + float(action[0]) * NEUTRAL_POSITION)
-        self.vjoy_device.data.wAxisY = int(NEUTRAL_POSITION + float(action[1]) * NEUTRAL_POSITION)
+
+        self.vjoy_device.data.wAxisY = utils.calculate_throttle_action(utils.convert_mps_to_kph(self.prev_state[3]))
+        # self.vjoy_device.data.wAxisY = int(NEUTRAL_POSITION + float(action[1]) * NEUTRAL_POSITION)
 
         self.vjoy_device.update()
 

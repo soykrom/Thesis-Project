@@ -18,6 +18,7 @@ vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", 
 # CONSTANTS
 ACTION_TIMEOUT_LIMIT = 100
 CO_PL, CO_DIST, CO_DONE = 1.0, 1.7, 0.75  # Reward Coefficients default values
+SPEED_LIMIT = 50 # Km/h
 
 # Normalization values
 with open(os.path.abspath('common/scale_factors.pkl'), 'rb') as file:
@@ -146,6 +147,18 @@ def calculate_heading(x, z):
     return heading
 
 
+def convert_mps_to_kph(velocity):
+    return velocity * 3.6
+
+
+def calculate_throttle_action(speed):
+    diff = speed - SPEED_LIMIT
+
+    action = diff / max(SPEED_LIMIT, speed)
+
+    return max(-1, min(1, action))
+
+
 # Calculated based on how much distance was advanced since last state and current velocity
 def calculate_reward(prev_state, state, done):
     lap_dist_prev = float(prev_state[5])
@@ -231,9 +244,9 @@ def obtain_state():
     # Angle
     orientation = [float(telemetry_data[3]), float(telemetry_data[5])]
     heading = calculate_heading(orientation[0], orientation[1])
-    # Velocity
+    # Velocity m/s
     velocity = -float(telemetry_data[8])
-    # Acceleration
+    # Acceleration m/s^2
     acceleration = -float(telemetry_data[11])
     # Lap Distance
     lap_dist = float(vehicle_data[0])

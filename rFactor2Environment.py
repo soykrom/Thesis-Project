@@ -12,7 +12,7 @@ NEUTRAL_POSITION = 16384
 class RFactor2Environment(gym.Env):
     def __init__(self):
         # Steering and Acceleration
-        self.action_space = spaces.Box(-1.0, 1.0, shape=(2,), dtype=float)
+        self.action_space = spaces.Box(-1.0, 1.0, shape=(1,), dtype=float)
         self.observation_space = spaces.Box(-1.0, 1.0, shape=(7,), dtype=float)
         # Vjoy Device
         self.vjoy_device = pyvjoy.VJoyDevice(1)
@@ -44,14 +44,15 @@ class RFactor2Environment(gym.Env):
 
     def step(self, action):
         # Execute the action using VJoy
-        print("Action in Step: ", action)
         if action.ndim > 1:
             action = action[0]
 
         self.vjoy_device.data.wAxisX = int(NEUTRAL_POSITION + float(action[0]) * NEUTRAL_POSITION)
 
-        self.vjoy_device.data.wAxisY = utils.calculate_throttle_action(utils.convert_mps_to_kph(self.prev_state[3]))
-        # self.vjoy_device.data.wAxisY = int(NEUTRAL_POSITION + float(action[1]) * NEUTRAL_POSITION)
+        throttle_action = utils.calculate_throttle_action(utils.convert_mps_to_kph(self.prev_state[3]))
+        # print(f"Action in Step\nSteering: {action}\tThrottle: {throttle_action}")
+
+        self.vjoy_device.data.wAxisY = int(NEUTRAL_POSITION + (throttle_action * NEUTRAL_POSITION))
 
         self.vjoy_device.update()
 

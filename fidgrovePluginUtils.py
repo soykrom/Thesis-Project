@@ -62,7 +62,7 @@ def plot(previous_states_df, agent):
         action = agent.choose_action(state_samples[i])
 
         actions_steering[i] = action[0]
-        actions_throttle[i] = action[1]
+#        actions_throttle[i] = action[1]
 
     dist_state_samples = [el[5] for el in state_samples]
 
@@ -101,7 +101,8 @@ def process_transitions(actions_df, states_df, agent):
     new_states_df = states_df['New State'].apply(lambda x: x.strip('[]').split(','))
 
     for index, action in actions_df.iterrows():
-        action = np.array(action)
+        action = np.array(action[0])
+
 
         prev_state = np.array(previous_states_df[index], dtype=float)
         new_state = np.array(new_states_df[index], dtype=float)
@@ -152,7 +153,7 @@ def convert_mps_to_kph(velocity):
 
 
 def calculate_throttle_action(speed):
-    diff = speed - SPEED_LIMIT
+    diff = SPEED_LIMIT - speed
 
     action = diff / max(SPEED_LIMIT, speed)
 
@@ -175,7 +176,7 @@ def calculate_reward(prev_state, state, done):
     else:
         penalty = 0
 
-    # print(f"Lap dist diff: {lap_dist_new - lap_dist_prev}\t
+    print(f"Lap dist diff: {CO_DIST * (lap_dist_new - lap_dist_prev)}")
     # With coefficient: {c_dist * (lap_dist_new - lap_dist_prev)}")
     # print(f"Path lateral: {abs(pl)}\tWith Coefficient: {c_pl * abs(pl)}")
 

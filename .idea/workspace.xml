@@ -4,18 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fb068fdc-e707-41d6-85c9-868366522b91" name="Changes" comment="Can extract inputs. Need to make an input file and fix what comes after but THEORETICALLY... it works?">
+    <list default="true" id="fb068fdc-e707-41d6-85c9-868366522b91" name="Changes" comment="Fixed workspace file.&#10;Changed way agent works so speed is set algorithmically. Network only decides steering action.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/main_sac.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/main_sac.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/models/critic_1_sac" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/models/critic_1_sac" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/models/critic_2_sac" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/models/critic_2_sac" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/models/sac/actor_sac" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/models/sac/actor_sac" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/models/sac/target_value_sac" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/models/sac/target_value_sac" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/models/sac/value_sac" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/models/sac/value_sac" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/networks.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/networks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/sac_torch.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/sac_torch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/lists.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/common/lists.pkl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fidgrovePluginUtils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fidgrovePluginUtils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rFactor2Environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/rFactor2Environment.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -36,7 +26,7 @@
         <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/pytorch-soft-actor-critic" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -68,7 +58,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "528c8d07",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "C:/IST/Tese/Thesis-Project",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -89,7 +79,7 @@
       <recent name="C:\IST\Tese\Thesis-Project" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.test">
+  <component name="RunManager" selected="Python.main_sac">
     <configuration name="coefficientTuning" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Thesis-Project" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -134,7 +124,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+    <configuration name="main_sac" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Thesis-Project" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -142,12 +132,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/pytorch-soft-actor-critic" />
+      <option name="WORKING_DIRECTORY" value="C:\IST\Tese\Thesis-Project" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pytorch-soft-actor-critic/main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/SAC/main_sac.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -164,12 +154,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/pytorch-soft-actor-critic" />
+      <option name="WORKING_DIRECTORY" value="C:\IST\Tese\Thesis-Project" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pytorch-soft-actor-critic/main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/SAC/main_sac.py" />
       <option name="PARAMETERS" value="--skip_initial=True" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -202,7 +192,7 @@
     </configuration>
     <list>
       <item itemvalue="Python.coefficientTuning" />
-      <item itemvalue="Python.main" />
+      <item itemvalue="Python.main_sac" />
       <item itemvalue="Python.main_skip" />
       <item itemvalue="Python.coefficient_generator" />
       <item itemvalue="Python.test" />
@@ -280,6 +270,7 @@
       <workItem from="1700014440441" duration="501000" />
       <workItem from="1700014954037" duration="404000" />
       <workItem from="1700015373733" duration="12245000" />
+      <workItem from="1702909818019" duration="959000" />
     </task>
     <task id="LOCAL-00001" summary="Pure Pursuit attempt">
       <created>1682625544496</created>
@@ -469,7 +460,15 @@
       <option name="project" value="LOCAL" />
       <updated>1699565440936</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="Fixed workspace file.&#10;Changed way agent works so speed is set algorithmically. Network only decides steering action.">
+      <option name="closed" value="true" />
+      <created>1702909946051</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1702909946051</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -508,11 +507,13 @@
     <MESSAGE value="A few steps forward." />
     <MESSAGE value="Coefficient tuning is working!&#10;&#10;There is a double reset problem somehow&#10;&#10;Created a venv&#10;Added rFactor2 as a separate file making gym_examples useless" />
     <MESSAGE value="Removed gym_examples" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed gym_examples" />
+    <MESSAGE value="Fixed workspace file.&#10;Changed way agent works so speed is set algorithmically. Network only decides steering action." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed workspace file.&#10;Changed way agent works so speed is set algorithmically. Network only decides steering action." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Thesis_Project$test.coverage" NAME="test Coverage Results" MODIFIED="1700130136269" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Thesis_Project$sac.coverage" NAME="sac Coverage Results" MODIFIED="1698944090846" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pytorch-soft-actor-critic" />
+    <SUITE FILE_PATH="coverage/Thesis_Project$main_sac.coverage" NAME="main_sac Coverage Results" MODIFIED="1702911539011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\IST\Tese\Thesis-Project" />
     <SUITE FILE_PATH="coverage/Thesis_Project$coefficient_generator.coverage" NAME="coefficient_generator Coverage Results" MODIFIED="1700074840668" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Thesis_Project$main_skip.coverage" NAME="main_skip Coverage Results" MODIFIED="1700075717355" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pytorch-soft-actor-critic" />
     <SUITE FILE_PATH="coverage/Thesis_Project$gameControler2.coverage" NAME="gameControler2 Coverage Results" MODIFIED="1695319727429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

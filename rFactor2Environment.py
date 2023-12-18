@@ -51,6 +51,7 @@ class RFactor2Environment(gym.Env):
 
         throttle_action = utils.calculate_throttle_action(utils.convert_mps_to_kph(self.prev_state[3]))
         # print(f"Action in Step\nSteering: {action}\tThrottle: {throttle_action}")
+        print(f"Velocity: {utils.convert_mps_to_kph(self.prev_state[3])}\tThrottle: {throttle_action}")
 
         self.vjoy_device.data.wAxisY = int(NEUTRAL_POSITION + (throttle_action * NEUTRAL_POSITION))
 

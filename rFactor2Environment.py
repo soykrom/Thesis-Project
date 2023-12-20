@@ -47,11 +47,11 @@ class RFactor2Environment(gym.Env):
         if action.ndim > 1:
             action = action[0]
 
+        # self.vjoy_device.data.wAxisX = int(NEUTRAL_POSITION)
         self.vjoy_device.data.wAxisX = int(NEUTRAL_POSITION + float(action[0]) * NEUTRAL_POSITION)
 
         throttle_action = utils.calculate_throttle_action(utils.convert_mps_to_kph(self.prev_state[3]))
         # print(f"Action in Step\nSteering: {action}\tThrottle: {throttle_action}")
-        print(f"Velocity: {utils.convert_mps_to_kph(self.prev_state[3])}\tThrottle: {throttle_action}")
 
         self.vjoy_device.data.wAxisY = int(NEUTRAL_POSITION + (throttle_action * NEUTRAL_POSITION))
 
@@ -65,6 +65,8 @@ class RFactor2Environment(gym.Env):
 
         done = utils.episode_finish(new_state)
         reward = utils.calculate_reward(self.prev_state, new_state, done)
+
+        self.prev_state = new_state
 
         utils.reset_events()
 

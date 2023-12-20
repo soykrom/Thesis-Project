@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fb068fdc-e707-41d6-85c9-868366522b91" name="Changes" comment="Fixed workspace file.&#10;Changed way agent works so speed is set algorithmically. Network only decides steering action.">
+    <list default="true" id="fb068fdc-e707-41d6-85c9-868366522b91" name="Changes" comment="Debugging">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/lists.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/common/lists.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rFactor2Environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/rFactor2Environment.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -54,20 +55,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/IST/Tese/Thesis-Project",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/IST/Tese/Thesis-Project&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\IST\Tese\Thesis-Project" />
@@ -79,7 +80,7 @@
       <recent name="C:\IST\Tese\Thesis-Project" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main_sac">
+  <component name="RunManager" selected="Python.main_skip">
     <configuration name="coefficientTuning" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Thesis-Project" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -271,6 +272,7 @@
       <workItem from="1700014954037" duration="404000" />
       <workItem from="1700015373733" duration="12245000" />
       <workItem from="1702909818019" duration="959000" />
+      <workItem from="1702924166117" duration="2114000" />
     </task>
     <task id="LOCAL-00001" summary="Pure Pursuit attempt">
       <created>1682625544496</created>
@@ -468,7 +470,15 @@
       <option name="project" value="LOCAL" />
       <updated>1702909946051</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Debugging">
+      <option name="closed" value="true" />
+      <created>1702924227218</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1702924227218</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -508,14 +518,15 @@
     <MESSAGE value="Coefficient tuning is working!&#10;&#10;There is a double reset problem somehow&#10;&#10;Created a venv&#10;Added rFactor2 as a separate file making gym_examples useless" />
     <MESSAGE value="Removed gym_examples" />
     <MESSAGE value="Fixed workspace file.&#10;Changed way agent works so speed is set algorithmically. Network only decides steering action." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed workspace file.&#10;Changed way agent works so speed is set algorithmically. Network only decides steering action." />
+    <MESSAGE value="Debugging" />
+    <option name="LAST_COMMIT_MESSAGE" value="Debugging" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Thesis_Project$test.coverage" NAME="test Coverage Results" MODIFIED="1700130136269" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Thesis_Project$sac.coverage" NAME="sac Coverage Results" MODIFIED="1698944090846" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pytorch-soft-actor-critic" />
-    <SUITE FILE_PATH="coverage/Thesis_Project$main_sac.coverage" NAME="main_sac Coverage Results" MODIFIED="1702911539011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\IST\Tese\Thesis-Project" />
+    <SUITE FILE_PATH="coverage/Thesis_Project$main_sac.coverage" NAME="main_sac Coverage Results" MODIFIED="1703085014426" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\IST\Tese\Thesis-Project" />
     <SUITE FILE_PATH="coverage/Thesis_Project$coefficient_generator.coverage" NAME="coefficient_generator Coverage Results" MODIFIED="1700074840668" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Thesis_Project$main_skip.coverage" NAME="main_skip Coverage Results" MODIFIED="1700075717355" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pytorch-soft-actor-critic" />
+    <SUITE FILE_PATH="coverage/Thesis_Project$main_skip.coverage" NAME="main_skip Coverage Results" MODIFIED="1703085027479" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\IST\Tese\Thesis-Project" />
     <SUITE FILE_PATH="coverage/Thesis_Project$gameControler2.coverage" NAME="gameControler2 Coverage Results" MODIFIED="1695319727429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Thesis_Project$gameControler_py.coverage" NAME="gameControler.py Coverage Results" MODIFIED="1682527027657" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/Thesis_Project$gameControler.coverage" NAME="gameControler Coverage Results" MODIFIED="1682526504825" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

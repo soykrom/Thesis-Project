@@ -89,7 +89,6 @@ if __name__ == '__main__':
         score = 0
         while not done:
             action = agent.choose_action(observation)
-
             observation_, reward, done, _, _ = env.step(action)
             score += reward
 

@@ -18,6 +18,7 @@ vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", 
 # CONSTANTS
 ACTION_TIMEOUT_LIMIT = 100
 CO_PL, CO_DIST, CO_DONE = 1.0, 1.7, 0.75  # Reward Coefficients default values
+SPEED_LIMIT = 50 # Km/h
 
 # Normalization values
 with open(os.path.abspath('common/scale_factors.pkl'), 'rb') as file:
@@ -61,7 +62,7 @@ def plot(previous_states_df, agent):
         action = agent.choose_action(state_samples[i])
 
         actions_steering[i] = action[0]
-        actions_throttle[i] = action[1]
+#        actions_throttle[i] = action[1]
 
     dist_state_samples = [el[5] for el in state_samples]
 
@@ -100,7 +101,8 @@ def process_transitions(actions_df, states_df, agent):
     new_states_df = states_df['New State'].apply(lambda x: x.strip('[]').split(','))
 
     for index, action in actions_df.iterrows():
-        action = np.array(action)
+        action = np.array(action[0])
+
 
         prev_state = scale_features(np.array(previous_states_df[index], dtype=float))
         new_state = scale_features(np.array(new_states_df[index], dtype=float))
@@ -146,6 +148,18 @@ def calculate_heading(x, z):
     return heading
 
 
+def convert_mps_to_kph(velocity):
+    return velocity * 3.6
+
+
+def calculate_throttle_action(speed):
+    diff = SPEED_LIMIT - speed
+
+    action = diff / max(SPEED_LIMIT, speed)
+
+    return max(-1, min(1, action))
+
+
 # Calculated based on how much distance was advanced since last state and current velocity
 def calculate_reward(prev_state, state, done):
     lap_dist_prev = float(prev_state[5])
@@ -162,7 +176,7 @@ def calculate_reward(prev_state, state, done):
     else:
         penalty = 0
 
-    # print(f"Lap dist diff: {lap_dist_new - lap_dist_prev}\t
+    print(f"Lap dist diff: {CO_DIST * (lap_dist_new - lap_dist_prev)}")
     # With coefficient: {c_dist * (lap_dist_new - lap_dist_prev)}")
     # print(f"Path lateral: {abs(pl)}\tWith Coefficient: {c_pl * abs(pl)}")
 
@@ -231,9 +245,9 @@ def obtain_state():
     # Angle
     orientation = [float(telemetry_data[3]), float(telemetry_data[5])]
     heading = calculate_heading(orientation[0], orientation[1])
-    # Velocity
+    # Velocity m/s
     velocity = -float(telemetry_data[8])
-    # Acceleration
+    # Acceleration m/s^2
     acceleration = -float(telemetry_data[11])
     # Lap Distance
     lap_dist = float(vehicle_data[0])

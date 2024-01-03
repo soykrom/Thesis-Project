@@ -1,17 +1,37 @@
-import os
+import numpy
+import matplotlib.pyplot as plt
 
-# Get the absolute path to the script
-script_path = os.path.abspath('epic')
-print("Script Path:", script_path)
 
-# Get the directory containing the script
-script_dir = os.path.dirname(script_path)
-print("Script Directory:", script_dir)
+def calculate_throttle_action(speed):
+    diff = 50 - speed
 
-# Get the absolute path to the "models" directory using os.path.join
-models_path = os.path.abspath(os.path.join(script_dir, 'models'))
-print("Models Path:", models_path)
+    action = diff / max(50, speed)
 
-# Construct the path to "actor_sac"
-file_path = os.path.join(models_path, 'sac', 'actor_sac')
-print("Final File Path:", file_path)
+    return max(-1, min(1, action))
+
+
+values = numpy.linspace(0, 100, 25)
+
+actions = []
+squared_actions = []
+for value in values:
+    throttle_action = calculate_throttle_action(value)
+
+    squared_action = throttle_action
+    squared_actions.append(squared_action)
+
+    print(f"Current Speed: {value}\tThrottle Action: {throttle_action}\tSquared Action: {squared_action}")
+
+    actions.append(throttle_action)
+
+plt.subplot(121)
+plt.plot(values, actions, 'r--')
+plt.xlabel("Speed")
+plt.ylabel("Action")
+
+plt.subplot(122)
+plt.plot(values, squared_actions, 'bs')
+plt.xlabel("Speed")
+plt.ylabel("Action")
+
+plt.show()

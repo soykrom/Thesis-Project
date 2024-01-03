@@ -25,7 +25,7 @@ def parse_args():
     parser.add_argument('--alpha', type=float, default=0.2, metavar='G',
                         help='Temperature parameter α determines the relative importance of the entropy\
                                 term against the reward (default: 0.2)')
-    parser.add_argument('--n_episodes', type=int, default=250, metavar='N',
+    parser.add_argument('--n_episodes', type=int, default=10, metavar='N',
                         help='number of 250 (default: 250)')
     parser.add_argument('--batch_size', type=int, default=256, metavar='N',
                         help='batch size (default: 256)')
@@ -79,7 +79,8 @@ if __name__ == '__main__':
         updates = utils.process_transitions(pandas.read_csv(args.input_file, header=1),
                                             states_df,
                                             agent)
-        utils.save_initial(args.training_file, agent)
+        agent.save_models()
+        # utils.save_initial(args.training_file, agent)
         utils.plot(states_df['Previous State'].apply(lambda y: y.strip('[]').split(',')), agent)
 
     for i in range(n_episodes):

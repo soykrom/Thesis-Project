@@ -83,6 +83,7 @@ class Agent:
 
         value = self.value(state).view(-1)
         value_ = self.target_value(state_).view(-1)
+        print(f"State: {state_}\nValue_: {value_}\n")
         value_[done] = 0.0
 
         # Critic network loss

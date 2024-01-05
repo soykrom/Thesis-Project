@@ -18,7 +18,7 @@ vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", 
 # CONSTANTS
 ACTION_TIMEOUT_LIMIT = 100
 CO_PL, CO_DIST, CO_DONE = 1.0, 1.7, 0.75  # Reward Coefficients default values
-SPEED_LIMIT = 50 # Km/h
+SPEED_LIMIT = 50  # Km/h
 
 # Normalization values
 with open(os.path.abspath('common/scale_factors.pkl'), 'rb') as file:
@@ -59,12 +59,12 @@ def plot(previous_states_df, agent):
 
     # Calculate the actions for each state based on your policy
     for i in range(num_samples):
-        action = agent.choose_action(state_samples[i])
+        action = agent.choose_action(scale_features(state_samples[i]))
 
-        actions_steering[i] = action[0]
+        actions_steering[i] = action
 #        actions_throttle[i] = action[1]
 
-    dist_state_samples = [el[5] for el in state_samples]
+    dist_state_samples = [el[2] for el in state_samples]
 
     # Create the action heatmap
     fig, (ax1, ax2) = plt.subplots(1, 2)
@@ -93,8 +93,6 @@ def process_transitions(actions_df, states_df, agent):
     print("Processing initial transitions")
     timer = time.process_time()
     actions = []
-    prev_states = []
-    next_states = []
     updates = 0
 
     previous_states_df = states_df['Previous State'].apply(lambda x: x.strip('[]').split(','))
@@ -103,18 +101,15 @@ def process_transitions(actions_df, states_df, agent):
     for index, action in actions_df.iterrows():
         action = np.array(action[0])
 
-
-        prev_state = scale_features(np.array(previous_states_df[index], dtype=float))
-        new_state = scale_features(np.array(new_states_df[index], dtype=float))
+        prev_state = np.array(previous_states_df[index], dtype=float)
+        new_state = np.array(new_states_df[index], dtype=float)
 
         actions.append(action)
-        prev_states.append(prev_state)
-        next_states.append(new_state)
 
         done = episode_finish(new_state)
         reward = calculate_reward(prev_state, new_state, done)
 
-        agent.remember(prev_state, action, reward, new_state, done)
+        agent.remember(scale_features(prev_state), action, reward, scale_features(new_state), done)
 
         # Update parameters of all the networks
         agent.learn()
@@ -239,22 +234,17 @@ def obtain_state():
     vehicle_data = vehicleScoringMMfile.read().decode("utf-8").rstrip('\x00').replace("\n", "").split(',')
     vehicleScoringMMfile.seek(0)
 
-    # Position
-    position = [round(float(telemetry_data[0]), 2), round(float(telemetry_data[2]), 2)]
-    position_x, position_y = position
     # Angle
     orientation = [float(telemetry_data[3]), float(telemetry_data[5])]
     heading = calculate_heading(orientation[0], orientation[1])
     # Velocity m/s
     velocity = -float(telemetry_data[8])
-    # Acceleration m/s^2
-    acceleration = -float(telemetry_data[11])
     # Lap Distance
     lap_dist = float(vehicle_data[0])
     # Path Lateral - Distance to center of track
     path_lateral = float(vehicle_data[1])
 
     # Compile information into state variable (Maybe turn into class/dict)
-    state = np.array([position_x, position_y, heading, velocity, acceleration, lap_dist, path_lateral])
+    state = np.array([heading, velocity, lap_dist, path_lateral])
 
     return state

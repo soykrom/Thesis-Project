@@ -13,7 +13,7 @@ class RFactor2Environment(gym.Env):
     def __init__(self):
         # Steering and Acceleration
         self.action_space = spaces.Box(-1.0, 1.0, shape=(1,), dtype=float)
-        self.observation_space = spaces.Box(-1.0, 1.0, shape=(7,), dtype=float)
+        self.observation_space = spaces.Box(-1.0, 1.0, shape=(4,), dtype=float)
         # Vjoy Device
         self.vjoy_device = pyvjoy.VJoyDevice(1)
         # Previous state (for reward purposes)
@@ -34,7 +34,6 @@ class RFactor2Environment(gym.Env):
 
         self.vjoy_device.data.wAxisX = NEUTRAL_POSITION
         self.vjoy_device.data.wAxisY = 0
-        self.vjoy_device.data.wAxisY = 0
 
         self.vjoy_device.update()
 
@@ -43,14 +42,11 @@ class RFactor2Environment(gym.Env):
         return utils.scale_features(new_state), dict()
 
     def step(self, action):
-        # Execute the action using VJoy
-        if action.ndim > 1:
-            action = action[0]
 
         # self.vjoy_device.data.wAxisX = int(NEUTRAL_POSITION)
-        self.vjoy_device.data.wAxisX = int(NEUTRAL_POSITION + float(action[0]) * NEUTRAL_POSITION)
+        self.vjoy_device.data.wAxisX = int(NEUTRAL_POSITION + float(action) * NEUTRAL_POSITION)
 
-        throttle_action = utils.calculate_throttle_action(utils.convert_mps_to_kph(self.prev_state[3]))
+        throttle_action = utils.calculate_throttle_action(utils.convert_mps_to_kph(self.prev_state[1]))
         # print(f"Action in Step\nSteering: {action}\tThrottle: {throttle_action}")
 
         self.vjoy_device.data.wAxisY = int(NEUTRAL_POSITION + (throttle_action * NEUTRAL_POSITION))
@@ -70,7 +66,6 @@ class RFactor2Environment(gym.Env):
 
         utils.reset_events()
 
-        time.sleep(0.05)
         return utils.scale_features(new_state), reward, done, False, dict()
 
 

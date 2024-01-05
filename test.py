@@ -1,37 +1,31 @@
-import numpy
-import matplotlib.pyplot as plt
+import pandas as pd
+import os
 
+# Assuming you have a pandas DataFrame named states_df
+states_df = pd.read_csv('common/transitions.csv')
 
-def calculate_throttle_action(speed):
-    diff = 50 - speed
+# Sample 5 random elements from 'Previous State' column
+previous_states = states_df['Previous State'].apply(lambda x: x.strip('[]').split(',')).tolist()
+new_states = states_df['New State'].apply(lambda x: x.strip('[]').split(',')).tolist()
 
-    action = diff / max(50, speed)
+# Define indexes to remove (1st, 2nd, and 5th)
+indexes_to_remove = [0, 1, 4]
 
-    return max(-1, min(1, action))
+# Convert string representations to lists of numbers
+prev_state = [
+    [float(value) for idx, value in enumerate(element) if idx not in indexes_to_remove]
+    for element in previous_states
+]
 
+new_state = [
+    [float(value) for idx, value in enumerate(element) if idx not in indexes_to_remove]
+    for element in new_states
+]
 
-values = numpy.linspace(0, 100, 25)
+state_transitions = []
+for element in zip(prev_state, new_state):
+    state_transitions.append(list(element))
 
-actions = []
-squared_actions = []
-for value in values:
-    throttle_action = calculate_throttle_action(value)
+states_df = pd.DataFrame(state_transitions, columns=['Previous State', 'New State'])
+states_df.to_csv(os.path.abspath('common/transitions.csv'), mode='w', index=False)
 
-    squared_action = throttle_action
-    squared_actions.append(squared_action)
-
-    print(f"Current Speed: {value}\tThrottle Action: {throttle_action}\tSquared Action: {squared_action}")
-
-    actions.append(throttle_action)
-
-plt.subplot(121)
-plt.plot(values, actions, 'r--')
-plt.xlabel("Speed")
-plt.ylabel("Action")
-
-plt.subplot(122)
-plt.plot(values, squared_actions, 'bs')
-plt.xlabel("Speed")
-plt.ylabel("Action")
-
-plt.show()

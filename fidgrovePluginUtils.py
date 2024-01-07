@@ -157,27 +157,30 @@ def calculate_throttle_action(speed):
 
 # Calculated based on how much distance was advanced since last state and current velocity
 def calculate_reward(prev_state, state, done):
-    lap_dist_prev = float(prev_state[5])
-    lap_dist_new = float(state[5])
-    # vel = float(state[3])
-    pl = float(state[6])
+    lap_dist_prev = float(prev_state[2])
+    lap_dist_new = float(state[2])
+    # vel = float(state[1])
+    pl = float(state[3])
 
     # Necessary because of resetting and plugin interaction
     if abs(lap_dist_new - lap_dist_prev) > 500:
         return 0
     elif done:
-        penalty = 1 / (lap_dist_new * scaling_factors[5])
-        print("Penalty: ", penalty)
+        # penalty = 1 / (lap_dist_new * scaling_factors[5])
+        penalty = 0
+        # print("Penalty: ", penalty)
     else:
         penalty = 0
 
-    print(f"Lap dist diff: {CO_DIST * (lap_dist_new - lap_dist_prev)}")
+    # print(f"Lap dist diff: {CO_DIST * (lap_dist_new - lap_dist_prev)}")
     # With coefficient: {c_dist * (lap_dist_new - lap_dist_prev)}")
     # print(f"Path lateral: {abs(pl)}\tWith Coefficient: {c_pl * abs(pl)}")
 
     reward = CO_DIST * (lap_dist_new - lap_dist_prev) - \
              CO_PL * abs(pl) - \
              CO_DONE * penalty
+
+    print(f"Reward: {reward}")
 
     return reward
 
@@ -192,8 +195,8 @@ def episode_finish(state):
     cond_timeout = False
     global count
     global timeout_dist
-    lap_dist_new = float(state[5])
-    pl = float(state[6])
+    lap_dist_new = float(state[2])
+    pl = float(state[3])
 
     if count == 0:
         timeout_dist = lap_dist_new

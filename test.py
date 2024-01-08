@@ -1,31 +1,28 @@
-import pandas as pd
-import os
+import pickle
+import numpy as np
 
-# Assuming you have a pandas DataFrame named states_df
-states_df = pd.read_csv('common/transitions.csv')
+with open('common/scale_factors.pkl', 'rb') as file:
+    data = pickle.load(file)
+    data2 = pickle.load(file)
 
-# Sample 5 random elements from 'Previous State' column
-previous_states = states_df['Previous State'].apply(lambda x: x.strip('[]').split(',')).tolist()
-new_states = states_df['New State'].apply(lambda x: x.strip('[]').split(',')).tolist()
+print(data)
+print(data2)
 
 # Define indexes to remove (1st, 2nd, and 5th)
 indexes_to_remove = [0, 1, 4]
 
-# Convert string representations to lists of numbers
-prev_state = [
-    [float(value) for idx, value in enumerate(element) if idx not in indexes_to_remove]
-    for element in previous_states
-]
+# Remove specified indexes from each element
+data = np.round(np.delete(data, indexes_to_remove), decimals=7)
+data2 = np.round(np.delete(data2, indexes_to_remove), decimals=7)
 
-new_state = [
-    [float(value) for idx, value in enumerate(element) if idx not in indexes_to_remove]
-    for element in new_states
-]
 
-state_transitions = []
-for element in zip(prev_state, new_state):
-    state_transitions.append(list(element))
+with open('common/scale_factors.pkl', 'wb') as file:
+    pickle.dump(data, file)
+    pickle.dump(data2, file)
 
-states_df = pd.DataFrame(state_transitions, columns=['Previous State', 'New State'])
-states_df.to_csv(os.path.abspath('common/transitions.csv'), mode='w', index=False)
+with open('common/scale_factors.pkl', 'rb') as file:
+    data = pickle.load(file)
+    data2 = pickle.load(file)
 
+print(data)
+print(data2)

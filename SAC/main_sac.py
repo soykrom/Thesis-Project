@@ -25,8 +25,8 @@ def parse_args():
     parser.add_argument('--alpha', type=float, default=0.2, metavar='G',
                         help='Temperature parameter α determines the relative importance of the entropy\
                                 term against the reward (default: 0.2)')
-    parser.add_argument('--n_episodes', type=int, default=10, metavar='N',
-                        help='number of 250 (default: 250)')
+    parser.add_argument('--n_episodes', type=int, default=250, metavar='N',
+                        help='number of episodes (default: 250)')
     parser.add_argument('--batch_size', type=int, default=256, metavar='N',
                         help='batch size (default: 256)')
     parser.add_argument('--hidden_size', type=int, default=256, metavar='N',
@@ -63,7 +63,8 @@ if __name__ == '__main__':
     # record video of the agent playing the game.
     # env = wrappers.Monitor(env, 'models/video', video_callable=lambda episode_id: True, force=True)
     filename = 'inverted_pendulum.png'
-    figure_file = 'plots/' + filename
+    figure_file = os.path.join(os.path.abspath('SAC\\plots'), filename)
+    print(figure_file)
 
     best_score = env.reward_range[0]
     score_history = []
@@ -111,4 +112,4 @@ if __name__ == '__main__':
 
     if not load_checkpoint:
         x = [i + 1 for i in range(n_episodes)]
-        plot_learning_curve(x, score_history, figure_file)
+        plot_learning_curve(x, score_history, figure_file, n_episodes)

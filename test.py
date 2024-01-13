@@ -1,28 +1,19 @@
 import pickle
 import numpy as np
+import pandas
 
-with open('common/scale_factors.pkl', 'rb') as file:
-    data = pickle.load(file)
-    data2 = pickle.load(file)
+states_df = pandas.read_csv('common/transitions.csv')
 
-print(data)
-print(data2)
+previous_states_df = states_df['Previous State'].apply(lambda x: x.strip('[]').split(','))
 
-# Define indexes to remove (1st, 2nd, and 5th)
-indexes_to_remove = [0, 1, 4]
-
-# Remove specified indexes from each element
-data = np.round(np.delete(data, indexes_to_remove), decimals=7)
-data2 = np.round(np.delete(data2, indexes_to_remove), decimals=7)
+min_vec = [10, 10, 10, 10]
+max_vec = [0, 0, 0, 0]
 
 
-with open('common/scale_factors.pkl', 'wb') as file:
-    pickle.dump(data, file)
-    pickle.dump(data2, file)
+for state in previous_states_df:
+    state = np.array(state, dtype=float)
 
-with open('common/scale_factors.pkl', 'rb') as file:
-    data = pickle.load(file)
-    data2 = pickle.load(file)
+    min_vec = np.minimum(state, min_vec)
+    max_vec = np.maximum(state, max_vec)
 
-print(data)
-print(data2)
+print(f"Minimum: {min_vec}\nMaximum: {max_vec}")

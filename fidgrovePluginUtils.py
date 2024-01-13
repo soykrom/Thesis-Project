@@ -62,7 +62,7 @@ def plot(previous_states_df, agent):
         action = agent.choose_action(scale_features(state_samples[i]))
 
         actions_steering[i] = action
-#        actions_throttle[i] = action[1]
+    #        actions_throttle[i] = action[1]
 
     dist_state_samples = [el[2] for el in state_samples]
 
@@ -74,11 +74,11 @@ def plot(previous_states_df, agent):
     ax1.set_xlabel('Lap Distance')
     ax1.set_ylabel('Steering')
 
-    # Plot data on the second subplot
-    ax2.scatter(dist_state_samples, actions_throttle)
-    ax2.set_title('Throttle Actions')
-    ax2.set_xlabel('Distance')
-    ax2.set_ylabel('Throttle')
+    # # Plot data on the second subplot
+    # ax2.scatter(dist_state_samples, actions_throttle)
+    # ax2.set_title('Throttle Actions')
+    # ax2.set_xlabel('Distance')
+    # ax2.set_ylabel('Throttle')
 
     # Display both subplots using a single plt.show() call
     plt.show()
@@ -150,7 +150,7 @@ def convert_mps_to_kph(velocity):
 def calculate_throttle_action(speed):
     diff = SPEED_LIMIT - speed
 
-    action = diff / max(SPEED_LIMIT, speed)
+    action = 1.4 * diff / max(SPEED_LIMIT, speed)
 
     return max(-1, min(1, action))
 

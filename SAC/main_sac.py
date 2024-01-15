@@ -20,7 +20,7 @@ def parse_args():
                         help='discount factor for reward (default: 0.99)')
     parser.add_argument('--tau', type=float, default=0.005, metavar='G',
                         help='target smoothing coefficient(τ) (default: 0.005)')
-    parser.add_argument('--beta', type=float, default=0.0003, metavar='G',
+    parser.add_argument('--beta', type=float, default=0.001, metavar='G',
                         help='learning rate (default: 0.0003)')
     parser.add_argument('--alpha', type=float, default=0.2, metavar='G',
                         help='Temperature parameter α determines the relative importance of the entropy\
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     env = gym.make(args.env_name)
 
     agent = Agent(alpha=args.alpha, gamma=args.gamma, tau=args.tau, beta=args.beta,
-                  input_dims=env.observation_space.shape,
+                  input_dims=env.observation_space.shape[0],
                   env=env, n_actions=env.action_space.shape[0],
                   layer1_size=args.hidden_size, layer2_size=args.hidden_size,
                   batch_size=args.batch_size)

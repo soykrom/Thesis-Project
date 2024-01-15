@@ -17,7 +17,7 @@ vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", 
 
 # CONSTANTS
 ACTION_TIMEOUT_LIMIT = 100
-CO_PL, CO_DIST, CO_DONE = 1.0, 1.7, 0.75  # Reward Coefficients default values
+CO_PL, CO_DIST, CO_VEL, CO_DONE = 0.8, 1.7, 0.8, 0.75  # Reward Coefficients default values
 SPEED_LIMIT = 50  # Km/h
 
 # Normalization values
@@ -107,7 +107,7 @@ def process_transitions(actions_df, states_df, agent):
         actions.append(action)
 
         done = episode_finish(new_state)
-        reward = calculate_reward(prev_state, new_state, done)
+        reward = calculate_reward(prev_state, new_state)
 
         agent.remember(scale_features(prev_state), action, reward, scale_features(new_state), done)
 
@@ -156,27 +156,20 @@ def calculate_throttle_action(speed):
 
 
 # Calculated based on how much distance was advanced since last state and current velocity
-def calculate_reward(prev_state, state, done):
+def calculate_reward(prev_state, state):
     lap_dist_prev = float(prev_state[2])
     lap_dist_new = float(state[2])
-    # vel = float(state[1])
+    vel = float(state[1])
     pl = float(state[3])
 
     # Necessary because of resetting and plugin interaction
     if abs(lap_dist_new - lap_dist_prev) > 500:
         return 0
-    elif done:
-        # penalty = 1 / (lap_dist_new * scaling_factors[5])
-        penalty = 0
-        # print("Penalty: ", penalty)
     else:
         penalty = 0
 
-    # print(f"Lap dist diff: {CO_DIST * (lap_dist_new - lap_dist_prev)}")
-    # With coefficient: {c_dist * (lap_dist_new - lap_dist_prev)}")
-    # print(f"Path lateral: {abs(pl)}\tWith Coefficient: {c_pl * abs(pl)}")
-
-    reward = CO_DIST * (lap_dist_new - lap_dist_prev) - \
+    reward = CO_DIST * (lap_dist_new - lap_dist_prev) + \
+             CO_VEL * vel - \
              CO_PL * abs(pl) - \
              CO_DONE * penalty
 

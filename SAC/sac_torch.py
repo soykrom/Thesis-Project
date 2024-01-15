@@ -6,7 +6,7 @@ import numpy
 
 
 class Agent:
-    def __init__(self, alpha=0.0003, beta=0.0003, input_dims=[8],
+    def __init__(self, alpha=0.0003, beta=0.0003, input_dims=4,
                  env=None, gamma=0.99, n_actions=2, max_size=1000000, tau=0.005,
                  layer1_size=256, layer2_size=256, batch_size=256, reward_scale=2):
         self.gamma = gamma
@@ -27,6 +27,8 @@ class Agent:
         self.scale = reward_scale
         self.update_network_parameters(tau=1)
 
+        print(f"Input dims: {input_dims}")
+
     def choose_action(self, observation):
         state = T.Tensor(numpy.array(observation)).to(self.actor.device)
         actions, _ = self.actor.sample_normal(state, reparameterize=True)
@@ -40,6 +42,7 @@ class Agent:
         if tau is None:
             tau = self.tau
 
+        print("Tau: ", tau)
         target_value_params = self.target_value.named_parameters()
         value_params = self.value.named_parameters()
 
@@ -83,7 +86,7 @@ class Agent:
 
         value = self.value(state).view(-1)
         value_ = self.target_value(state_).view(-1)
-        print(f"State: {state_}\nValue_: {value_}\n")
+        print(f"Value_: {value_}\n")
         value_[done] = 0.0
 
         # Critic network loss

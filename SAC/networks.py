@@ -7,7 +7,7 @@ from torch.distributions.normal import Normal
 
 
 class CriticNetwork(nn.Module):
-    def __init__(self, beta, input_dims, n_actions, fc1_dims=256, fc2_dims=256,
+    def __init__(self, beta, input_dims, n_actions, fc1_dims=256, fc2_dims=256, init_w=3e-3,
                  name='critic', chkpt_dir=os.path.abspath('SAC\\models')):
         super(CriticNetwork, self).__init__()
         self.input_dims = input_dims
@@ -21,6 +21,9 @@ class CriticNetwork(nn.Module):
         self.fc1 = nn.Linear(self.input_dims + n_actions, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
         self.q = nn.Linear(self.fc2_dims, 1)
+
+        self.q.weight.data.uniform_(-init_w, init_w)
+        self.q.bias.data.uniform_(-init_w, init_w)
 
         self.optimizer = optim.Adam(self.parameters(), lr=beta)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
@@ -45,7 +48,7 @@ class CriticNetwork(nn.Module):
 
 
 class ValueNetwork(nn.Module):
-    def __init__(self, beta, input_dims, fc1_dims=256, fc2_dims=256,
+    def __init__(self, beta, input_dims, fc1_dims=256, fc2_dims=256, init_w=3e-3,
                  name='value', chkpt_dir=os.path.abspath('SAC\\models\\sac')):
         super(ValueNetwork, self).__init__()
         self.input_dims = input_dims
@@ -58,6 +61,9 @@ class ValueNetwork(nn.Module):
         self.fc1 = nn.Linear(self.input_dims, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
         self.v = nn.Linear(self.fc2_dims, 1)
+
+        self.v.weight.data.uniform_(-init_w, init_w)
+        self.v.bias.data.uniform_(-init_w, init_w)
 
         self.optimizer = optim.Adam(self.parameters(), lr=beta)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
@@ -82,7 +88,7 @@ class ValueNetwork(nn.Module):
 
 
 class ActorNetwork(nn.Module):
-    def __init__(self, alpha, input_dims, max_action, fc1_dims=256,
+    def __init__(self, alpha, input_dims, max_action, fc1_dims=256, init_w=3e-3,
                  fc2_dims=256, n_actions=2, name='actor', chkpt_dir=os.path.abspath('SAC\\models\\sac')):
         super(ActorNetwork, self).__init__()
         self.input_dims = input_dims
@@ -98,8 +104,14 @@ class ActorNetwork(nn.Module):
 
         self.fc1 = nn.Linear(*self.input_dims, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
+
         self.mu = nn.Linear(self.fc2_dims, self.n_actions)
+        self.mu.weight.data.uniform_(-init_w, init_w)
+        self.mu.bias.data.uniform_(-init_w, init_w)
+
         self.sigma = nn.Linear(self.fc2_dims, self.n_actions)
+        self.sigma.weight.data.uniform_(-init_w, init_w)
+        self.sigma.bias.data.uniform_(-init_w, init_w)
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
@@ -121,16 +133,17 @@ class ActorNetwork(nn.Module):
 
     def sample_normal(self, state, reparameterize=True):
         mu, sigma = self.forward(state)
+        sigma = sigma.exp()
 
-        probabilities = Normal(mu, sigma)
+        probabilities = Normal(0, 1)
 
         if reparameterize:
-            actions = probabilities.rsample()
+            actions = probabilities.rsample().to(self.device)
         else:
-            actions = probabilities.sample()
+            actions = probabilities.sample().to(self.device)
 
-        action = T.tanh(actions) * T.tensor(self.max_action).to(self.device)
-        log_probs = probabilities.log_prob(actions)
+        action = T.tanh(mu + actions * sigma).cpu()
+        log_probs = probabilities.log_prob(mu + actions * sigma)
         log_probs -= T.log(1 - action.pow(2) + self.reparam_noise)
         log_probs = log_probs.sum(0, keepdim=True)
 

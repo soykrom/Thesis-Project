@@ -5,9 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="64020168-b1d2-4db6-b18c-0d8ac809e510" name="Changes" comment="MoORRREEEE DEBUGGGINGGG">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_15_01_2024_13_50_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Thesis-Project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Thesis-Project.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_11_2023_11_39__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_11_2023_11_39__Changes_.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/networks.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/networks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diagrama sem nome.drawio" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Fidgrove_Race_Engineer.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coefficientTuning.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coefficient_generator.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fidgroveData2Pandas.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fidgrovePluginUtils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputObtainer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/proposal.drawio" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rFactor2Environment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,7 +35,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="spinningUp" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -200,13 +211,15 @@
     </configuration>
     <list>
       <item itemvalue="Python.coefficientTuning" />
-      <item itemvalue="Python.coefficient_generator" />
       <item itemvalue="Python.main_sac" />
       <item itemvalue="Python.main_skip" />
+      <item itemvalue="Python.coefficient_generator" />
       <item itemvalue="Python.test" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.test" />
+        <item itemvalue="Python.coefficient_generator" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.coefficient_generator" />
       </list>

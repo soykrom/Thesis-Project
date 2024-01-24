@@ -4,23 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="64020168-b1d2-4db6-b18c-0d8ac809e510" name="Changes" comment="MoORRREEEE DEBUGGGINGGG">
-      <change beforePath="$PROJECT_DIR$/.idea/Thesis-Project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Thesis-Project.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="64020168-b1d2-4db6-b18c-0d8ac809e510" name="Changes" comment="Environment setup. Need to find a way around win32event">
       <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_11_2023_11_39__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_11_2023_11_39__Changes_.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Diagrama sem nome.drawio" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fidgrove_Race_Engineer.dll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/coefficientTuning.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/coefficient_generator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fidgroveData2Pandas.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fidgrovePluginUtils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/inputObtainer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/proposal.drawio" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rFactor2Environment.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
-    <list default="true" id="64020168-b1d2-4db6-b18c-0d8ac809e510" name="Changes" comment="Environment setup. Need to find a way around win32event" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -36,7 +23,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="spinningUp" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -67,24 +54,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.main.executor": "Run",
-    "Python.main_sac.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "spinningUp",
-    "last_opened_file_path": "C:/IST/Tese/spinup-test",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PythonContentEntriesConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main_sac.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/IST/Tese/spinup-test&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PythonContentEntriesConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\IST\Tese\Thesis-Project" />
@@ -96,7 +83,7 @@
       <recent name="C:\IST\Tese\Thesis-Project" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.main_sac">
     <configuration name="coefficientTuning" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Thesis-Project" />
       <option name="ENV_FILES" value="" />
@@ -214,13 +201,15 @@
     </configuration>
     <list>
       <item itemvalue="Python.coefficientTuning" />
+      <item itemvalue="Python.coefficient_generator" />
       <item itemvalue="Python.main_sac" />
       <item itemvalue="Python.main_skip" />
-      <item itemvalue="Python.coefficient_generator" />
       <item itemvalue="Python.test" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.test" />
+        <item itemvalue="Python.coefficient_generator" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.coefficient_generator" />
       </list>
@@ -576,7 +565,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705972255114</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Environment setup. Need to find a way around win32event">
+      <option name="closed" value="true" />
+      <created>1706124328990</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1706124328990</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -594,7 +591,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Cleared up code.&#10;Added reward function.&#10;Observation space and Action Space relevancy?&#10;Missing linking between agent and environment." />
     <MESSAGE value="Added simple Done conditions.&#10;Cleared up Reward Function.&#10;&#10;Rudimentary debug was done, but not with agent.&#10;&#10;Some refactoring to make step function more clear needed." />
     <MESSAGE value="Connected SAC agent to Environment.&#10;&#10;Missing PyVJoy connection" />
     <MESSAGE value="Agent is able to control car and execute episodes.&#10;&#10;Not working the best due to initial straight reset." />
@@ -619,7 +615,8 @@
     <MESSAGE value="Fixed Scale Factor problem" />
     <MESSAGE value="MoORRREEEE DEBUGGGINGGG" />
     <MESSAGE value="Changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes" />
+    <MESSAGE value="Environment setup. Need to find a way around win32event" />
+    <option name="LAST_COMMIT_MESSAGE" value="Environment setup. Need to find a way around win32event" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Thesis_Project$gameControler.coverage" NAME="gameControler Coverage Results" MODIFIED="1682526504825" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

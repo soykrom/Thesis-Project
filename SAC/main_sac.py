@@ -8,8 +8,8 @@ from sac_torch import Agent
 from utils import plot_learning_curve
 from gym import wrappers
 
-import fidgrovePluginUtils as utils
-import rFactor2Environment
+import environment.utils.fidgrovePluginUtils as utils
+import environment.rFactor2Environment
 
 
 def parse_args():

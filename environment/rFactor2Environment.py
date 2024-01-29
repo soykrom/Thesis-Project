@@ -4,7 +4,7 @@ import gym
 import pyvjoy
 from gym import spaces
 
-import fidgrovePluginUtils as utils
+import utils.fidgrovePluginUtils as utils
 
 NEUTRAL_POSITION = 16384
 

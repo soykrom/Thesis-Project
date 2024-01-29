@@ -55,21 +55,6 @@ class Agent:
 
         self.target_value.load_state_dict(value_state_dict)
 
-    def save_models(self):
-        print('.... saving models ....')
-        self.actor.save_checkpoint()
-        self.value.save_checkpoint()
-        self.target_value.save_checkpoint()
-        self.critic_1.save_checkpoint()
-        self.critic_2.save_checkpoint()
-
-    def load_models(self):
-        print('.... loading models ....')
-        self.actor.load_checkpoint()
-        self.value.load_checkpoint()
-        self.target_value.load_checkpoint()
-        self.critic_1.load_checkpoint()
-        self.critic_2.load_checkpoint()
 
     def learn(self):
         if self.memory.mem_cntr < self.batch_size:
@@ -137,3 +122,19 @@ class Agent:
         critic_value = critic_value.view(-1)
 
         return critic_value
+
+    def save_models(self):
+        print('.... saving models ....')
+        self.actor.save_checkpoint()
+        self.value.save_checkpoint()
+        self.target_value.save_checkpoint()
+        self.critic_1.save_checkpoint()
+        self.critic_2.save_checkpoint()
+
+    def load_models(self):
+        print('.... loading models ....')
+        self.actor.load_checkpoint()
+        self.value.load_checkpoint()
+        self.target_value.load_checkpoint()
+        self.critic_1.load_checkpoint()
+        self.critic_2.load_checkpoint()

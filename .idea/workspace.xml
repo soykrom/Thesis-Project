@@ -5,18 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="64020168-b1d2-4db6-b18c-0d8ac809e510" name="Changes" comment="Fixed Scale Factor problem">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_01_2024_22_37_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_01_2024_22_37__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_01_2024_12_50_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_01_2024_12_50__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Thesis-Project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Thesis-Project.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_15_01_2024_13_50__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_15_01_2024_13_50__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_11_2023_11_39__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_11_2023_11_39__Changes_.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diagrama sem nome.drawio" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Fidgrove_Race_Engineer.dll" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/SAC/main_sac.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/main_sac.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/networks.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/networks.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SAC/sac_torch.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/sac_torch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fidgrovePluginUtils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fidgrovePluginUtils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pytorch-soft-actor-critic" beforeDir="false" afterPath="$PROJECT_DIR$/pytorch-soft-actor-critic" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rFactor2Environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/rFactor2Environment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/coefficientTuning.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coefficient_generator.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fidgroveData2Pandas.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fidgrovePluginUtils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputObtainer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/proposal.drawio" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rFactor2Environment.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,6 +96,7 @@
   <component name="RunManager" selected="Python.main_sac">
     <configuration name="coefficientTuning" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Thesis-Project" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -114,6 +119,7 @@
     </configuration>
     <configuration name="coefficient_generator" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis-Project" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -136,6 +142,7 @@
     </configuration>
     <configuration name="main_sac" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Thesis-Project" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -158,6 +165,7 @@
     </configuration>
     <configuration name="main_skip" type="PythonConfigurationType" factoryName="Python">
       <module name="Thesis-Project" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -180,6 +188,7 @@
     </configuration>
     <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis-Project" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>

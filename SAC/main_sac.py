@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument('--tau', type=float, default=0.005, metavar='G',
                         help='target smoothing coefficient(τ) (default: 0.005)')
     parser.add_argument('--beta', type=float, default=0.001, metavar='G',
-                        help='learning rate (default: 0.0003)')
+                        help='learning rate (default: 0.001)')
     parser.add_argument('--alpha', type=float, default=0.2, metavar='G',
                         help='Temperature parameter α determines the relative importance of the entropy\
                                 term against the reward (default: 0.2)')

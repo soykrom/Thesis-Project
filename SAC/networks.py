@@ -88,9 +88,10 @@ class ValueNetwork(nn.Module):
 
 
 class ActorNetwork(nn.Module):
-    def __init__(self, alpha, input_dims, max_action, fc1_dims=256, init_w=3e-3,
+    def __init__(self, alpha, beta, input_dims, max_action, fc1_dims=256, init_w=3e-3,
                  fc2_dims=256, n_actions=2, name='actor', chkpt_dir=os.path.abspath('SAC\\models\\sac')):
         super(ActorNetwork, self).__init__()
+        self.alpha = alpha
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
@@ -113,7 +114,7 @@ class ActorNetwork(nn.Module):
         self.sigma.weight.data.uniform_(-init_w, init_w)
         self.sigma.bias.data.uniform_(-init_w, init_w)
 
-        self.optimizer = optim.Adam(self.parameters(), lr=alpha)
+        self.optimizer = optim.Adam(self.parameters(), lr=beta)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
 
         self.to(self.device)

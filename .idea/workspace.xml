@@ -4,23 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="64020168-b1d2-4db6-b18c-0d8ac809e510" name="Changes" comment="Fixed Scale Factor problem">
-      <change beforePath="$PROJECT_DIR$/.idea/Thesis-Project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Thesis-Project.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_15_01_2024_13_50__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_15_01_2024_13_50__Changes_.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_11_2023_11_39__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_11_2023_11_39__Changes_.xml" afterDir="false" />
+    <list default="true" id="64020168-b1d2-4db6-b18c-0d8ac809e510" name="Changes" comment="Resetting">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_01_2024_15_14_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_01_2024_15_14__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_01_2024_19_24_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_24_01_2024_19_24__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_28_01_2024_17_09_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_28_01_2024_17_09__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_28_01_2024_17_08_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_28_01_2024_17_08__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_01_2024_00_59_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_01_2024_00_59__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Diagrama sem nome.drawio" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fidgrove_Race_Engineer.dll" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/SAC/main_sac.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/main_sac.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SAC/networks.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/networks.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SAC/sac_torch.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/sac_torch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/coefficientTuning.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/coefficient_generator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fidgroveData2Pandas.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fidgrovePluginUtils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/inputObtainer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/proposal.drawio" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rFactor2Environment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spinningup" beforeDir="false" afterPath="$PROJECT_DIR$/spinningup" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spinningup/spinup/algos/pytorch/sac/sac.py" beforeDir="false" afterPath="$PROJECT_DIR$/spinningup/spinup/algos/pytorch/sac/sac.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +52,7 @@
   <component name="GithubPullRequestsUISettings">
     <option name="selectedUrlAndAccountId">
       <UrlAndAccount>
-        <option name="accountId" value="3740ba3a-6f7b-4ed6-9715-0a8e4b88f7b4" />
+        <option name="accountId" value="94d0a6fe-1519-4367-bc09-db335ff5db2c" />
         <option name="url" value="https://github.com/soykrom/Thesis-Project.git" />
       </UrlAndAccount>
     </option>
@@ -68,20 +69,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/IST/Tese/Thesis-Project&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/IST/Tese/Thesis-Project",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\IST\Tese\Thesis-Project" />
@@ -223,6 +226,13 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-50da183f06c8-2887949eec09-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.13135.95" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -299,6 +309,9 @@
       <workItem from="1704981850862" duration="4682000" />
       <workItem from="1704994276237" duration="4179000" />
       <workItem from="1705329810720" duration="719000" />
+      <workItem from="1707066302092" duration="1469000" />
+      <workItem from="1707164938421" duration="1798000" />
+      <workItem from="1707417192126" duration="2204000" />
     </task>
     <task id="LOCAL-00001" summary="Pure Pursuit attempt">
       <created>1682625544496</created>
@@ -544,7 +557,23 @@
       <option name="project" value="LOCAL" />
       <updated>1704666970237</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Resetting">
+      <option name="closed" value="true" />
+      <created>1706489933662</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1706489933663</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Resetting">
+      <option name="closed" value="true" />
+      <created>1706489979532</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1706489979532</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -562,7 +591,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fixed Git Stuff" />
     <MESSAGE value="Added game event to environment. &#10;Added acceleration and velocity game controller" />
     <MESSAGE value="Cleared up code.&#10;Added reward function.&#10;Observation space and Action Space relevancy?&#10;Missing linking between agent and environment." />
     <MESSAGE value="Added simple Done conditions.&#10;Cleared up Reward Function.&#10;&#10;Rudimentary debug was done, but not with agent.&#10;&#10;Some refactoring to make step function more clear needed." />
@@ -587,7 +615,8 @@
     <MESSAGE value="More debugging.&#10;&#10;Problem is with Value Network getting really wrong values" />
     <MESSAGE value="Reward update" />
     <MESSAGE value="Fixed Scale Factor problem" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed Scale Factor problem" />
+    <MESSAGE value="Resetting" />
+    <option name="LAST_COMMIT_MESSAGE" value="Resetting" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Thesis_Project$sac.coverage" NAME="sac Coverage Results" MODIFIED="1698944090846" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pytorch-soft-actor-critic" />

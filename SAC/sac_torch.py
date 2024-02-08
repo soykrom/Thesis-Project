@@ -15,7 +15,7 @@ class Agent:
         self.batch_size = batch_size
         self.n_actions = n_actions
 
-        self.actor = ActorNetwork(alpha, input_dims, n_actions=n_actions,
+        self.actor = ActorNetwork(alpha, beta, input_dims, n_actions=n_actions,
                                   name='actor', max_action=env.action_space.high)
         self.critic_1 = CriticNetwork(beta, input_dims, n_actions=n_actions,
                                       name='critic_1')
@@ -55,7 +55,6 @@ class Agent:
 
         self.target_value.load_state_dict(value_state_dict)
 
-
     def learn(self):
         if self.memory.mem_cntr < self.batch_size:
             return
@@ -78,9 +77,14 @@ class Agent:
         self.critic_1.optimizer.zero_grad()
         self.critic_2.optimizer.zero_grad()
 
-        q_hat = self.scale * reward + self.gamma * value_
         q1_old_policy = self.critic_1.forward(state, action).view(-1)
         q2_old_policy = self.critic_2.forward(state, action).view(-1)
+
+        q_hat = self.scale * reward + self.gamma * value_
+        # From spinningup: q_hat = reward + self.gamma * (1 - done) *
+        #       (target_critic_value - self.actor.alpha * actions_log_prob_next_state)
+
+        # Spinningup doesn't do this 0.5, but here they are averaged out. Good??
         critic_1_loss = 0.5 * F.mse_loss(q1_old_policy, q_hat)
         critic_2_loss = 0.5 * F.mse_loss(q2_old_policy, q_hat)
 
@@ -88,8 +92,6 @@ class Agent:
         critic_loss.backward()
         self.critic_1.optimizer.step()
         self.critic_2.optimizer.step()
-
-        self.update_network_parameters()
 
         # Value network loss
         actions, log_probs = self.actor.sample_normal(state, reparameterize=False)
@@ -104,16 +106,19 @@ class Agent:
         self.value.optimizer.step()
 
         # Actor network loss
+        self.actor.optimizer.zero_grad()
+
         actions, log_probs = self.actor.sample_normal(state, reparameterize=True)
         log_probs = log_probs.view(-1)
 
         critic_value = self.obtain_critic_value(state, actions)
 
-        self.actor.optimizer.zero_grad()
-        actor_loss = log_probs - critic_value
+        actor_loss = log_probs * self.actor.alpha - critic_value
         actor_loss = T.mean(actor_loss)
-        actor_loss.backward(retain_graph=True)
+        actor_loss.backward()
         self.actor.optimizer.step()
+
+        self.update_network_parameters()
 
     def obtain_critic_value(self, state, actions):
         q1_new_policy = self.critic_1.forward(state, actions)

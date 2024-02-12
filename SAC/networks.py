@@ -22,8 +22,8 @@ class CriticNetwork(nn.Module):
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
         self.q = nn.Linear(self.fc2_dims, 1)
 
-        self.q.weight.data.uniform_(-init_w, init_w)
-        self.q.bias.data.uniform_(-init_w, init_w)
+        self.q.weight.data.uniform_(0, init_w)
+        self.q.bias.data.uniform_(0, init_w)
 
         self.optimizer = optim.Adam(self.parameters(), lr=beta)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
@@ -62,8 +62,8 @@ class ValueNetwork(nn.Module):
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
         self.v = nn.Linear(self.fc2_dims, 1)
 
-        self.v.weight.data.uniform_(-init_w, init_w)
-        self.v.bias.data.uniform_(-init_w, init_w)
+        self.v.weight.data.uniform_(0, init_w)
+        self.v.bias.data.uniform_(0, init_w)
 
         self.optimizer = optim.Adam(self.parameters(), lr=beta)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
@@ -103,12 +103,12 @@ class ActorNetwork(nn.Module):
         self.max_action = max_action
         self.reparam_noise = 1e-6
 
-        self.fc1 = nn.Linear(*self.input_dims, self.fc1_dims)
+        self.fc1 = nn.Linear(self.input_dims, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
 
         self.mu = nn.Linear(self.fc2_dims, self.n_actions)
-        self.mu.weight.data.uniform_(-init_w, init_w)
-        self.mu.bias.data.uniform_(-init_w, init_w)
+        self.mu.weight.data.uniform_(0, init_w)
+        self.mu.bias.data.uniform_(0, init_w)
 
         self.sigma = nn.Linear(self.fc2_dims, self.n_actions)
         self.sigma.weight.data.uniform_(-init_w, init_w)

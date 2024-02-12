@@ -21,7 +21,7 @@ CO_PL, CO_DIST, CO_VEL, CO_DONE = 0.8, 1.7, 0.8, 0.75  # Reward Coefficients def
 SPEED_LIMIT = 50  # Km/h
 
 # Normalization values
-with open(os.path.abspath('common/scale_factors.pkl'), 'rb') as file:
+with open(os.path.abspath('environment/common/scale_factors.pkl'), 'rb') as file:
     scaling_factors = pickle.load(file)
     min_values = pickle.load(file)
 
@@ -83,7 +83,7 @@ def plot(previous_states_df, agent):
     # Display both subplots using a single plt.show() call
     plt.show()
 
-    with open(os.path.join('common/lists.pkl'), 'wb') as filename:
+    with open(os.path.join('environment/common/lists.pkl'), 'wb') as filename:
         pickle.dump(state_samples, filename)
         pickle.dump(actions_steering, filename)
         pickle.dump(actions_throttle, filename)
@@ -114,6 +114,12 @@ def process_transitions(actions_df, states_df, agent):
         # Update parameters of all the networks
         agent.learn()
         updates += 1
+
+    value_mean = agent.value_mean()
+
+    with open(os.path.join('environment/common/value_mean.pkl'), 'wb') as filename:
+        pickle.dump(value_mean, filename)
+        print("Saved")
 
     elapsed_time = time.process_time() - timer
     print(f"Initial inputs and parameter updates finished after {elapsed_time} seconds.")
@@ -173,7 +179,7 @@ def calculate_reward(prev_state, state):
              CO_PL * abs(pl) - \
              CO_DONE * penalty
 
-    print(f"Reward: {reward}")
+    # print(f"Reward: {reward}")
 
     return reward
 

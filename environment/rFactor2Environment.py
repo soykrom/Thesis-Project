@@ -4,7 +4,7 @@ import gym
 import pyvjoy
 from gym import spaces
 
-import utils.fidgrovePluginUtils as utils
+import environment.utils.fidgrovePluginUtils as utils
 
 NEUTRAL_POSITION = 16384
 
@@ -69,4 +69,4 @@ class RFactor2Environment(gym.Env):
         return utils.scale_features(new_state), reward, done, False, dict()
 
 
-gym.register(id='RFactor2-v0', entry_point='rFactor2Environment:RFactor2Environment')
+# gym.register(id='RFactor2-v0', entry_point='rFactor2Environment:RFactor2Environment')

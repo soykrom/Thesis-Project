@@ -6,9 +6,10 @@ import numpy
 
 
 class Agent:
+
     def __init__(self, alpha=0.0003, beta=0.0003, input_dims=4,
                  env=None, gamma=0.99, n_actions=2, max_size=1000000, tau=0.005,
-                 layer1_size=256, layer2_size=256, batch_size=256, reward_scale=2):
+                 layer1_size=256, layer2_size=256, batch_size=256):
         self.gamma = gamma
         self.tau = tau
         self.memory = ReplayBuffer(max_size, input_dims, n_actions)
@@ -23,8 +24,8 @@ class Agent:
                                       name='critic_2')
         self.value = ValueNetwork(beta, input_dims, name='value')
         self.target_value = ValueNetwork(beta, input_dims, name='target_value')
+        self.value_mean = []
 
-        self.scale = reward_scale
         self.update_network_parameters(tau=1)
 
         print(f"Input dims: {input_dims}")
@@ -42,7 +43,6 @@ class Agent:
         if tau is None:
             tau = self.tau
 
-        print("Tau: ", tau)
         target_value_params = self.target_value.named_parameters()
         value_params = self.value.named_parameters()
 
@@ -56,6 +56,8 @@ class Agent:
         self.target_value.load_state_dict(value_state_dict)
 
     def learn(self):
+        global value_mean
+
         if self.memory.mem_cntr < self.batch_size:
             return
 
@@ -70,28 +72,10 @@ class Agent:
 
         value = self.value(state).view(-1)
         value_ = self.target_value(state_).view(-1)
-        print(f"Value_: {value_}\n")
+        # print(f"Value_: {value_}\n")
         value_[done] = 0.0
 
-        # Critic network loss
-        self.critic_1.optimizer.zero_grad()
-        self.critic_2.optimizer.zero_grad()
-
-        q1_old_policy = self.critic_1.forward(state, action).view(-1)
-        q2_old_policy = self.critic_2.forward(state, action).view(-1)
-
-        q_hat = self.scale * reward + self.gamma * value_
-        # From spinningup: q_hat = reward + self.gamma * (1 - done) *
-        #       (target_critic_value - self.actor.alpha * actions_log_prob_next_state)
-
-        # Spinningup doesn't do this 0.5, but here they are averaged out. Good??
-        critic_1_loss = 0.5 * F.mse_loss(q1_old_policy, q_hat)
-        critic_2_loss = 0.5 * F.mse_loss(q2_old_policy, q_hat)
-
-        critic_loss = critic_1_loss + critic_2_loss
-        critic_loss.backward()
-        self.critic_1.optimizer.step()
-        self.critic_2.optimizer.step()
+        self.value_mean.append(T.mean(value_).item())
 
         # Value network loss
         actions, log_probs = self.actor.sample_normal(state, reparameterize=False)
@@ -104,6 +88,26 @@ class Agent:
         value_loss = 0.5 * F.mse_loss(value, value_target)
         value_loss.backward(retain_graph=True)
         self.value.optimizer.step()
+
+        # Critic network loss
+        self.critic_1.optimizer.zero_grad()
+        self.critic_2.optimizer.zero_grad()
+
+        q1_old_policy = self.critic_1.forward(state, action).view(-1)
+        q2_old_policy = self.critic_2.forward(state, action).view(-1)
+
+        q_hat = reward + self.gamma * value_
+        # From spinningup: q_hat = reward + self.gamma * (1 - done) *
+        #       (target_critic_value - self.actor.alpha * actions_log_prob_next_state)
+
+        # Spinningup doesn't do this 0.5, but here they are averaged out. Good??
+        critic_1_loss = 0.5 * F.mse_loss(q1_old_policy, q_hat)
+        critic_2_loss = 0.5 * F.mse_loss(q2_old_policy, q_hat)
+
+        critic_loss = critic_1_loss + critic_2_loss
+        critic_loss.backward()
+        self.critic_1.optimizer.step()
+        self.critic_2.optimizer.step()
 
         # Actor network loss
         self.actor.optimizer.zero_grad()

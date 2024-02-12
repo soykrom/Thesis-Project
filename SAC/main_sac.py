@@ -9,7 +9,7 @@ from utils import plot_learning_curve
 from gym import wrappers
 
 import environment.utils.fidgrovePluginUtils as utils
-import environment.rFactor2Environment
+from environment.rFactor2Environment import RFactor2Environment
 
 
 def parse_args():
@@ -34,12 +34,12 @@ def parse_args():
     parser.add_argument('--replay_size', type=int, default=1000000, metavar='N',
                         help='size of replay buffer (default: 10000000)')
     parser.add_argument('--epsilon', type=float, default=0.10, help='epsilon for epsilon greedy (default: 0.10')
-    parser.add_argument('--input_file', default=os.path.abspath('common/inputs.csv'), help='file name with\
+    parser.add_argument('--input_file', default=os.path.abspath('environment/common/inputs.csv'), help='file name with\
                                                                                          initial inputs')
-    parser.add_argument('--states_file', default=os.path.abspath('common/transitions.csv'), help='file name with\
+    parser.add_argument('--states_file', default=os.path.abspath('environment/common/transitions.csv'), help='file name with\
                                                                             state transitions of initial inputs')
     parser.add_argument('--skip_initial', type=bool, default=False, help='skip initial transitions training')
-    parser.add_argument('--training_file', default=os.path.abspath('common/initial_training.pkl'),
+    parser.add_argument('--training_file', default=os.path.abspath('environment/common/initial_training.pkl'),
                         help='file name with training inputs')
     parser.add_argument('--coefficients', nargs=3, type=float, default=None, help='to be used coefficients')
 
@@ -50,7 +50,8 @@ if __name__ == '__main__':
     args = parse_args()
 
     print(f"Creating Environment {args.env_name}")
-    env = gym.make(args.env_name)
+    # env = gym.make(args.env_name)
+    env = RFactor2Environment()
 
     agent = Agent(alpha=args.alpha, gamma=args.gamma, tau=args.tau, beta=args.beta,
                   input_dims=env.observation_space.shape[0],
@@ -59,9 +60,6 @@ if __name__ == '__main__':
                   batch_size=args.batch_size)
     n_episodes = args.n_episodes
 
-    # uncomment this line and do a mkdir models && mkdir video if you want to
-    # record video of the agent playing the game.
-    # env = wrappers.Monitor(env, 'models/video', video_callable=lambda episode_id: True, force=True)
     filename = 'inverted_pendulum.png'
     figure_file = os.path.join(os.path.abspath('SAC\\plots'), filename)
     print(figure_file)

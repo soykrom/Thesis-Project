@@ -56,8 +56,6 @@ class Agent:
         self.target_value.load_state_dict(value_state_dict)
 
     def learn(self):
-        global value_mean
-
         if self.memory.mem_cntr < self.batch_size:
             return
 

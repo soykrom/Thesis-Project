@@ -25,6 +25,8 @@ def parse_args():
     parser.add_argument('--alpha', type=float, default=0.2, metavar='G',
                         help='Temperature parameter α determines the relative importance of the entropy\
                                 term against the reward (default: 0.2)')
+    parser.add_argument('--start_steps', type=int, default=10000, metavar='N',
+                        help='number of start steps (default: 40000)')
     parser.add_argument('--n_episodes', type=int, default=250, metavar='N',
                         help='number of episodes (default: 250)')
     parser.add_argument('--batch_size', type=int, default=256, metavar='N',
@@ -69,10 +71,32 @@ if __name__ == '__main__':
     load_checkpoint = False
 
     if args.skip_initial:
-        updates = 0
-        agent.load_models()
-        states_df = pandas.read_csv(args.states_file)
-        utils.plot(states_df['Previous State'].apply(lambda y: y.strip('[]').split(',')), agent)
+        print("Performing initial start steps")
+
+        steps = 0
+
+        while steps < args.start_steps:
+            print("Current step: ", steps)
+            observation = env.reset()[0]
+            done = False
+
+            while not done:
+                action = env.action_space.sample()
+                observation_, reward, done, _, _ = env.step(action)
+
+                agent.remember(observation, action, reward, observation_, done)
+
+                if not load_checkpoint:
+                    agent.learn()
+
+                observation = observation_
+
+                steps += 1
+
+        # updates = 0
+        # agent.load_models()
+        # states_df = pandas.read_csv(args.states_file)
+        # utils.plot(states_df['Previous State'].apply(lambda y: y.strip('[]').split(',')), agent)
     else:
         states_df = pandas.read_csv(args.states_file)
         updates = utils.process_transitions(pandas.read_csv(args.input_file, header=1),

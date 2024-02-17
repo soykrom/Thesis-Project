@@ -106,7 +106,7 @@ def process_transitions(actions_df, states_df, agent):
 
         actions.append(action)
 
-        done = episode_finish(new_state)
+        done = episode_finish(prev_state, new_state)
         reward = calculate_reward(prev_state, new_state)
 
         agent.remember(scale_features(prev_state), action, reward, scale_features(new_state), done)
@@ -115,10 +115,8 @@ def process_transitions(actions_df, states_df, agent):
         agent.learn()
         updates += 1
 
-    value_mean = agent.value_mean()
-
     with open(os.path.join('environment/common/value_mean.pkl'), 'wb') as filename:
-        pickle.dump(value_mean, filename)
+        pickle.dump(agent.value_mean, filename)
         print("Saved")
 
     elapsed_time = time.process_time() - timer
@@ -184,16 +182,15 @@ def calculate_reward(prev_state, state):
     return reward
 
 
-# Checks if a lap is completed or if the agent goes backwards (with some margin and reset care)
-# Or if it drives out of bounds or if it times out
 count = 0
 timeout_dist = 0
 
 
-def episode_finish(state):
+def episode_finish(prev_state, state):
     cond_timeout = False
     global count
     global timeout_dist
+    lap_dist_prev = float(prev_state[2])
     lap_dist_new = float(state[2])
     pl = float(state[3])
 
@@ -209,12 +206,14 @@ def episode_finish(state):
 
     cond_pl = abs(pl) >= 8.0
     cond_start_pl = lap_dist_new < 200 and pl > 5.5
+    cond_finish = lap_dist_prev > lap_dist_new and count > 800
 
-    done = (cond_pl or cond_start_pl or cond_timeout) and count > 20
+    done = (cond_pl or cond_start_pl or cond_timeout or cond_finish) and count > 20
     if done:
         print("PL: ", cond_pl)
         print("Start: ", cond_start_pl)
         print("Timeout: ", cond_timeout)
+        print("Finish: ", cond_finish)
         count = 0
 
     return done

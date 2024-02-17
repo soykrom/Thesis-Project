@@ -1,18 +1,14 @@
-import numpy as np
-import pandas
+import pickle
 
-states_df = pandas.read_csv('common/transitions.csv')
+import matplotlib.pyplot as plt
 
-previous_states_df = states_df['Previous State'].apply(lambda x: x.strip('[]').split(','))
+array = pickle.load(open("environment/common/value_mean.pkl", 'rb'))
 
-min_vec = [10, 10, 10, 10]
-max_vec = [0, 0, 0, 0]
-
-
-for state in previous_states_df:
-    state = np.array(state, dtype=float)
-
-    min_vec = np.minimum(state, min_vec)
-    max_vec = np.maximum(state, max_vec)
-
-print(f"Minimum: {min_vec}\nMaximum: {max_vec}")
+# Plotting
+plt.plot(range(len(array)), array)
+plt.xlabel('Index')
+plt.ylabel('Value')
+plt.title('Array values vs Index')
+plt.yscale('log')
+plt.grid(True)
+plt.show()

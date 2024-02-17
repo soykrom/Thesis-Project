@@ -59,7 +59,7 @@ class RFactor2Environment(gym.Env):
         if self.prev_state is None:
             self.prev_state = new_state
 
-        done = utils.episode_finish(new_state)
+        done = utils.episode_finish(self.prev_state, new_state)
         reward = utils.calculate_reward(self.prev_state, new_state)
 
         self.prev_state = new_state

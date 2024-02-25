@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 
 class ReplayBuffer:
@@ -25,12 +26,12 @@ class ReplayBuffer:
     def sample_buffer(self, batch_size):
         max_mem = min(self.mem_cntr, self.mem_size)
 
-        batch = np.random.choice(max_mem, batch_size)
+        index = np.random.randint(0, max_mem, batch_size)
 
-        states = self.state_memory[batch]
-        states_ = self.new_state_memory[batch]
-        actions = self.action_memory[batch]
-        rewards = self.reward_memory[batch]
-        dones = self.terminal_memory[batch]
+        batch = dict(state=self.state_memory[index],
+                     state_=self.new_state_memory[index],
+                     action=self.action_memory[index],
+                     reward=self.reward_memory[index],
+                     done=self.terminal_memory[index])
 
-        return states, actions, rewards, states_, dones
+        return {k: torch.as_tensor(v, dtype=torch.float32) for k, v in batch.items()}

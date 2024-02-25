@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import torch as T
 import torch.nn.functional as F
 import torch.nn as nn
@@ -128,27 +129,28 @@ class ActorNetwork(nn.Module):
         mu = self.mu(prob)
         sigma = self.sigma(prob)
 
-        sigma = T.clamp(sigma, min=self.reparam_noise, max=2)
+        sigma = T.clamp(sigma, min=-20, max=2)
+        sigma = sigma.exp()
 
         return mu, sigma
 
     def sample_normal(self, state, reparameterize=True):
         mu, sigma = self.forward(state)
-        sigma = sigma.exp()
 
-        probabilities = Normal(0, 1)
+        probabilities = Normal(mu, sigma)
 
         if reparameterize:
             actions = probabilities.rsample().to(self.device)
         else:
             actions = probabilities.sample().to(self.device)
 
-        action = T.tanh(mu + actions * sigma).cpu()
-        log_probs = probabilities.log_prob(mu + actions * sigma)
-        log_probs -= T.log(1 - action.pow(2) + self.reparam_noise)
-        log_probs = log_probs.sum(0, keepdim=True)
+        log_probs = probabilities.log_prob(actions).sum(axis=-1)
+        log_probs -= (2 * (np.log(2) - actions - F.softplus(-2 * actions))).sum(axis=1)
 
-        return action.float(), log_probs
+        actions = T.tanh(actions)
+        actions = self.n_actions * actions
+
+        return actions, log_probs
 
     def save_checkpoint(self):
         T.save(self.state_dict(), self.checkpoint_file)

@@ -89,42 +89,6 @@ def plot(previous_states_df, agent):
         pickle.dump(actions_throttle, filename)
 
 
-def process_transitions(actions_df, states_df, agent):
-    print("Processing initial transitions")
-    timer = time.process_time()
-    actions = []
-    updates = 0
-
-    previous_states_df = states_df['Previous State'].apply(lambda x: x.strip('[]').split(','))
-    new_states_df = states_df['New State'].apply(lambda x: x.strip('[]').split(','))
-
-    for index, action in actions_df.iterrows():
-        action = np.array(action[0])
-
-        prev_state = np.array(previous_states_df[index], dtype=float)
-        new_state = np.array(new_states_df[index], dtype=float)
-
-        actions.append(action)
-
-        done = episode_finish(prev_state, new_state)
-        reward = calculate_reward(prev_state, new_state)
-
-        agent.remember(scale_features(prev_state), action, reward, scale_features(new_state), done)
-
-        # Update parameters of all the networks
-        agent.learn()
-        updates += 1
-
-    with open(os.path.join('environment/common/value_mean.pkl'), 'wb') as filename:
-        pickle.dump(agent.value_mean, filename)
-        print("Saved")
-
-    elapsed_time = time.process_time() - timer
-    print(f"Initial inputs and parameter updates finished after {elapsed_time} seconds.")
-
-    return updates
-
-
 def reset_events():
     win32event.ResetEvent(telemetryH)
     win32event.ResetEvent(vehicleScoringH)

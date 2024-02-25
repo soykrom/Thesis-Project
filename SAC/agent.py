@@ -86,7 +86,7 @@ class Agent(nn.Module):
     #     q2_old_policy = self.critic_2.forward(state, action).view(-1)
     #
     #     q_hat = reward + self.gamma * value_
-    #     # From spinningup: q_hat = reward + self.gamma * (1 - done) *
+    #     # From spinningup_sac: q_hat = reward + self.gamma * (1 - done) *
     #     #       (target_critic_value - self.actor.alpha * actions_log_prob_next_state)
     #
     #     # Spinningup doesn't do this 0.5, but here they are averaged out. Good??

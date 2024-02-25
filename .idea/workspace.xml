@@ -4,20 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="64020168-b1d2-4db6-b18c-0d8ac809e510" name="Changes" comment="Fixed Scale Factor problem">
-      <change afterPath="$PROJECT_DIR$/SAC/sac.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Thesis-Project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Thesis-Project.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_13_02_2024_16_35_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_13_02_2024_16_35__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/buffer.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/buffer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/main_sac.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/networks.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/networks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/sac_torch.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/agent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAC/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAC/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/environment/utils/fidgrovePluginUtils.py" beforeDir="false" afterPath="$PROJECT_DIR$/environment/utils/fidgrovePluginUtils.py" afterDir="false" />
-    </list>
+    <list default="true" id="64020168-b1d2-4db6-b18c-0d8ac809e510" name="Changes" comment="Branch name change" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -73,7 +60,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "value__network__removaç",
+    "git-widget-placeholder": "value__network__removal",
     "last_opened_file_path": "C:/IST/Tese/Thesis-Project/environment/rFactor2Environment.py",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -318,7 +305,7 @@
       <workItem from="1708091687688" duration="438000" />
       <workItem from="1708093989736" duration="597000" />
       <workItem from="1708872994914" duration="1474000" />
-      <workItem from="1708874495515" duration="8163000" />
+      <workItem from="1708874495515" duration="8520000" />
     </task>
     <task id="LOCAL-00001" summary="Pure Pursuit attempt">
       <created>1682625544496</created>
@@ -580,7 +567,23 @@
       <option name="project" value="LOCAL" />
       <updated>1706489979532</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Created sac.py file that executes the entire process as spinningup.&#10;Changed process_transitions so it works with this.&#10;TODO: Need to create the file that starts the whole thing. Change the methods that save the models. Double check networks.py and agent.py">
+      <option name="closed" value="true" />
+      <created>1708885726752</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1708885726752</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Branch name change">
+      <option name="closed" value="true" />
+      <created>1708885762650</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1708885762650</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -598,8 +601,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added game event to environment. &#10;Added acceleration and velocity game controller" />
-    <MESSAGE value="Cleared up code.&#10;Added reward function.&#10;Observation space and Action Space relevancy?&#10;Missing linking between agent and environment." />
     <MESSAGE value="Added simple Done conditions.&#10;Cleared up Reward Function.&#10;&#10;Rudimentary debug was done, but not with agent.&#10;&#10;Some refactoring to make step function more clear needed." />
     <MESSAGE value="Connected SAC agent to Environment.&#10;&#10;Missing PyVJoy connection" />
     <MESSAGE value="Agent is able to control car and execute episodes.&#10;&#10;Not working the best due to initial straight reset." />
@@ -623,7 +624,9 @@
     <MESSAGE value="Reward update" />
     <MESSAGE value="Fixed Scale Factor problem" />
     <MESSAGE value="Resetting" />
-    <option name="LAST_COMMIT_MESSAGE" value="Resetting" />
+    <MESSAGE value="Created sac.py file that executes the entire process as spinningup.&#10;Changed process_transitions so it works with this.&#10;TODO: Need to create the file that starts the whole thing. Change the methods that save the models. Double check networks.py and agent.py" />
+    <MESSAGE value="Branch name change" />
+    <option name="LAST_COMMIT_MESSAGE" value="Branch name change" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Thesis_Project$gameControler.coverage" NAME="gameControler Coverage Results" MODIFIED="1682526504825" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

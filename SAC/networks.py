@@ -8,7 +8,7 @@ from torch.distributions.normal import Normal
 
 
 class CriticNetwork(nn.Module):
-    def __init__(self, beta, input_dims, n_actions, fc1_dims=256, fc2_dims=256, init_w=3e-3,
+    def __init__(self, lr, input_dims, n_actions, fc1_dims=256, fc2_dims=256,
                  name='critic', chkpt_dir=os.path.abspath('SAC\\models')):
         super(CriticNetwork, self).__init__()
         self.input_dims = input_dims
@@ -23,10 +23,7 @@ class CriticNetwork(nn.Module):
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
         self.q = nn.Linear(self.fc2_dims, 1)
 
-        self.q.weight.data.uniform_(0, init_w)
-        self.q.bias.data.uniform_(0, init_w)
-
-        self.optimizer = optim.Adam(self.parameters(), lr=beta)
+        self.optimizer = optim.Adam(self.parameters(), lr=lr)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
 
         self.to(self.device)
@@ -48,74 +45,30 @@ class CriticNetwork(nn.Module):
         self.load_state_dict(T.load(self.checkpoint_file))
 
 
-class ValueNetwork(nn.Module):
-    def __init__(self, beta, input_dims, fc1_dims=256, fc2_dims=256, init_w=3e-3,
-                 name='value', chkpt_dir=os.path.abspath('SAC\\models\\sac')):
-        super(ValueNetwork, self).__init__()
-        self.input_dims = input_dims
-        self.fc1_dims = fc1_dims
-        self.fc2_dims = fc2_dims
-        self.name = name
-        self.checkpoint_dir = chkpt_dir
-        self.checkpoint_file = os.path.join(self.checkpoint_dir, name + '_sac')
-
-        self.fc1 = nn.Linear(self.input_dims, self.fc1_dims)
-        self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
-        self.v = nn.Linear(self.fc2_dims, 1)
-
-        self.v.weight.data.uniform_(0, init_w)
-        self.v.bias.data.uniform_(0, init_w)
-
-        self.optimizer = optim.Adam(self.parameters(), lr=beta)
-        self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
-
-        self.to(self.device)
-
-    def forward(self, state):
-        state_value = self.fc1(state)
-        state_value = F.relu(state_value)
-        state_value = self.fc2(state_value)
-        state_value = F.relu(state_value)
-
-        v = self.v(state_value)
-
-        return v
-
-    def save_checkpoint(self):
-        T.save(self.state_dict(), self.checkpoint_file)
-
-    def load_checkpoint(self):
-        self.load_state_dict(T.load(self.checkpoint_file))
+LOG_STD_MAX = 2
+LOG_STD_MIN = -20
 
 
 class ActorNetwork(nn.Module):
-    def __init__(self, alpha, beta, input_dims, max_action, fc1_dims=256, init_w=3e-3,
+    def __init__(self, lr, input_dims, fc1_dims=256,
                  fc2_dims=256, n_actions=2, name='actor', chkpt_dir=os.path.abspath('SAC\\models\\sac')):
         super(ActorNetwork, self).__init__()
-        self.alpha = alpha
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
         self.n_actions = n_actions
-        print("N_Actions: ", n_actions)
+
         self.name = name
         self.checkpoint_dir = chkpt_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name + '_sac')
-        self.max_action = max_action
-        self.reparam_noise = 1e-6
 
         self.fc1 = nn.Linear(self.input_dims, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
 
         self.mu = nn.Linear(self.fc2_dims, self.n_actions)
-        self.mu.weight.data.uniform_(0, init_w)
-        self.mu.bias.data.uniform_(0, init_w)
-
         self.sigma = nn.Linear(self.fc2_dims, self.n_actions)
-        self.sigma.weight.data.uniform_(-init_w, init_w)
-        self.sigma.bias.data.uniform_(-init_w, init_w)
 
-        self.optimizer = optim.Adam(self.parameters(), lr=beta)
+        self.optimizer = optim.Adam(self.parameters(), lr=lr)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
 
         self.to(self.device)
@@ -130,6 +83,7 @@ class ActorNetwork(nn.Module):
         sigma = self.sigma(prob)
 
         sigma = T.clamp(sigma, min=-20, max=2)
+        sigma = T.clamp(sigma, LOG_STD_MIN, LOG_STD_MAX)
         sigma = sigma.exp()
 
         return mu, sigma

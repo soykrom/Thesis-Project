@@ -1,31 +1,31 @@
-import time
+import os
 from copy import deepcopy
 import itertools
 import numpy as np
 import torch
 from torch.optim import Adam
 
+from SAC.utils import plot_learning_curve
 from agent import Agent
 from buffer import ReplayBuffer
 from environment.rFactor2Environment import RFactor2Environment
-import environment.utils.fidgrovePluginUtils as utils
 
 
-def sac(seed=0, skip_inital=False,
+def sac(seed=0, skip_initial=False,
         alpha=0.2, gamma=0.99, tau=0.995, lr=1e-3,
         replay_size=1e6, batch_size=4096, update_after=1000, update_every=50,
         steps_per_epoch=2000, epochs=100, max_ep_len=10000, start_steps=4e3):
+
     torch.manual_seed(seed)
     np.random.seed(seed)
 
-    # env = env
     env = RFactor2Environment()
 
-    obs_dim = env.observation_space.shape[0]
+    obs_dim = env.observation_space.shape
     act_dim = env.action_space.shape[0]
 
     agent = Agent(env=env, input_dims=obs_dim, n_actions=act_dim,
-                  alpha=alpha, gamma=gamma, tau=tau, beta=lr)
+                  alpha=alpha, gamma=gamma, tau=tau, lr=lr)
     agent_targ = deepcopy(agent)
 
     for p in agent_targ.parameters():
@@ -71,37 +71,6 @@ def sac(seed=0, skip_inital=False,
 
         return loss_pi
 
-    def process_transitions(actions_df, states_df):
-        print("Processing initial transitions")
-        timer = time.process_time()
-        actions = []
-        updates = 0
-
-        previous_states_df = states_df['Previous State'].apply(lambda x: x.strip('[]').split(','))
-        new_states_df = states_df['New State'].apply(lambda x: x.strip('[]').split(','))
-
-        for index, act in actions_df.iterrows():
-            act = np.array(action[0])
-
-            prev_state = np.array(previous_states_df[index], dtype=float)
-            new_state = np.array(new_states_df[index], dtype=float)
-
-            actions.append(action)
-
-            d = utils.episode_finish(prev_state, new_state)
-            r = utils.calculate_reward(prev_state, new_state)
-
-            replay_buffer.store_transition(prev_state, act, r, new_state, d)
-
-            # Update parameters of all the networks
-            learn()
-            updates += 1
-
-        elapsed_time = time.process_time() - timer
-        print(f"Initial inputs and parameter updates finished after {elapsed_time} seconds.")
-
-        return updates
-
     def learn():
         # Obtain batch data
         data = replay_buffer.sample_buffer(batch_size)
@@ -140,13 +109,13 @@ def sac(seed=0, skip_inital=False,
 
     score_history = []
 
-    if skip_inital:
+    if skip_initial:
         agent.load_models()
         agent_targ.load_models()
 
     # Main loop
     for step_count in range(total_steps):
-        if step_count > start_steps and not skip_inital:
+        if step_count > start_steps and not skip_initial:
             action = agent.choose_action(obs)
         else:
             action = env.action_space.sample()
@@ -180,3 +149,43 @@ def sac(seed=0, skip_inital=False,
         if avg_score > best_reward:
             agent.save_models()
             agent_targ.save_models()
+
+    # Plot learning curve
+    filename = 'inverted_pendulum.png'
+    figure_file = os.path.join(os.path.abspath('SAC\\plots'), filename)
+    print(figure_file)
+
+    score = [i + 1 for i in range(len(score_history))]
+    plot_learning_curve(score, score_history, figure_file, len(score_history))
+
+
+    # def process_transitions(actions_df, states_df):
+    #     print("Processing initial transitions")
+    #     timer = time.process_time()
+    #     actions = []
+    #     updates = 0
+    #
+    #     previous_states_df = states_df['Previous State'].apply(lambda x: x.strip('[]').split(','))
+    #     new_states_df = states_df['New State'].apply(lambda x: x.strip('[]').split(','))
+    #
+    #     for index, act in actions_df.iterrows():
+    #         act = np.array(action[0])
+    #
+    #         prev_state = np.array(previous_states_df[index], dtype=float)
+    #         new_state = np.array(new_states_df[index], dtype=float)
+    #
+    #         actions.append(action)
+    #
+    #         d = utils.episode_finish(prev_state, new_state)
+    #         r = utils.calculate_reward(prev_state, new_state)
+    #
+    #         replay_buffer.store_transition(prev_state, act, r, new_state, d)
+    #
+    #         # Update parameters of all the networks
+    #         learn()
+    #         updates += 1
+    #
+    #     elapsed_time = time.process_time() - timer
+    #     print(f"Initial inputs and parameter updates finished after {elapsed_time} seconds.")
+    #
+    #     return updates

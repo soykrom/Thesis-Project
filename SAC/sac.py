@@ -11,7 +11,8 @@ from environment.rFactor2Environment import RFactor2Environment
 import environment.utils.fidgrovePluginUtils as utils
 
 
-def sac(seed=0, alpha=0.2, gamma=0.99, tau=0.995, lr=1e-3,
+def sac(seed=0, skip_inital=False,
+        alpha=0.2, gamma=0.99, tau=0.995, lr=1e-3,
         replay_size=1e6, batch_size=4096, update_after=1000, update_every=50,
         steps_per_epoch=2000, epochs=100, max_ep_len=10000, start_steps=4e3):
     torch.manual_seed(seed)
@@ -135,10 +136,17 @@ def sac(seed=0, alpha=0.2, gamma=0.99, tau=0.995, lr=1e-3,
 
     # Reset as preparation for environment interation
     obs, ep_reward, ep_len = env.reset(), 0, 0
+    best_reward = 0
+
+    score_history = []
+
+    if skip_inital:
+        agent.load_models()
+        agent_targ.load_models()
 
     # Main loop
     for step_count in range(total_steps):
-        if step_count > start_steps:
+        if step_count > start_steps and not skip_inital:
             action = agent.choose_action(obs)
         else:
             action = env.action_space.sample()
@@ -163,3 +171,12 @@ def sac(seed=0, alpha=0.2, gamma=0.99, tau=0.995, lr=1e-3,
         if step_count >= update_after and step_count % update_every == 0:
             for i in range(update_every):
                 learn()
+
+        score_history.append(ep_reward)
+        avg_score = np.mean(score_history[-100:])
+        if ep_reward > best_reward:
+            best_reward = ep_reward
+
+        if avg_score > best_reward:
+            agent.save_models()
+            agent_targ.save_models()

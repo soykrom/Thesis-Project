@@ -11,7 +11,7 @@ class CriticNetwork(nn.Module):
     def __init__(self, lr, input_dims, n_actions, fc1_dims=256, fc2_dims=256,
                  name='critic', chkpt_dir=os.path.abspath('SAC\\models')):
         super(CriticNetwork, self).__init__()
-        self.input_dims = input_dims
+        self.input_dims = input_dims[0]
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
         self.n_actions = n_actions
@@ -20,6 +20,8 @@ class CriticNetwork(nn.Module):
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name + '_sac')
 
         self.fc1 = nn.Linear(self.input_dims + n_actions, self.fc1_dims)
+
+        print(f"FC1: {self.fc1.weight.shape}")
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
         self.q = nn.Linear(self.fc2_dims, 1)
 
@@ -29,7 +31,7 @@ class CriticNetwork(nn.Module):
         self.to(self.device)
 
     def forward(self, state, action):
-        action_value = self.fc1(T.cat([state, action], dim=1))
+        action_value = self.fc1(T.cat([state, action], dim=-1))
         action_value = F.relu(action_value)
         action_value = self.fc2(action_value)
         action_value = F.relu(action_value)
@@ -50,10 +52,11 @@ LOG_STD_MIN = -20
 
 
 class ActorNetwork(nn.Module):
-    def __init__(self, lr, input_dims, fc1_dims=256,
-                 fc2_dims=256, n_actions=2, name='actor', chkpt_dir=os.path.abspath('SAC\\models\\sac')):
+    def __init__(self, lr, input_dims, n_actions=2,
+                 fc1_dims=256, fc2_dims=256,
+                 name='actor', chkpt_dir=os.path.abspath('SAC\\models\\sac')):
         super(ActorNetwork, self).__init__()
-        self.input_dims = input_dims
+        self.input_dims = input_dims[0]
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
         self.n_actions = n_actions
@@ -82,24 +85,27 @@ class ActorNetwork(nn.Module):
         mu = self.mu(prob)
         sigma = self.sigma(prob)
 
-        sigma = T.clamp(sigma, min=-20, max=2)
         sigma = T.clamp(sigma, LOG_STD_MIN, LOG_STD_MAX)
         sigma = sigma.exp()
 
         return mu, sigma
 
-    def sample_normal(self, state, reparameterize=True):
+    def sample_normal(self, state, reparameterize=True, with_logprob=True):
         mu, sigma = self.forward(state)
 
         probabilities = Normal(mu, sigma)
 
         if reparameterize:
-            actions = probabilities.rsample().to(self.device)
+            actions = probabilities.rsample()
         else:
-            actions = probabilities.sample().to(self.device)
+            actions = probabilities.sample()
 
-        log_probs = probabilities.log_prob(actions).sum(axis=-1)
-        log_probs -= (2 * (np.log(2) - actions - F.softplus(-2 * actions))).sum(axis=1)
+        if with_logprob:
+            print("LOGPROB")
+            log_probs = probabilities.log_prob(actions).sum(axis=-1)
+            log_probs -= (2 * (np.log(2) - actions - F.softplus(-2 * actions))).sum(axis=1)
+        else:
+            log_probs = None
 
         actions = T.tanh(actions)
         actions = self.n_actions * actions

@@ -39,7 +39,7 @@ class RFactor2Environment(gym.Env):
 
         time.sleep(9.0)
 
-        return utils.scale_features(new_state), dict()
+        return new_state
 
     def step(self, action):
 
@@ -66,7 +66,7 @@ class RFactor2Environment(gym.Env):
 
         utils.reset_events()
 
-        return utils.scale_features(new_state), reward, done, False, dict()
+        return new_state, reward, done, False, dict()
 
 
 # gym.register(id='RFactor2-v0', entry_point='rFactor2Environment:RFactor2Environment')

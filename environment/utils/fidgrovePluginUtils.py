@@ -2,7 +2,6 @@ import math
 import mmap
 import os.path
 import pickle
-import time
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -59,7 +58,7 @@ def plot(previous_states_df, agent):
 
     # Calculate the actions for each state based on your policy
     for i in range(num_samples):
-        action = agent.choose_action(scale_features(state_samples[i]))
+        action = agent.choose_action(state_samples[i])
 
         actions_steering[i] = action
     #        actions_throttle[i] = action[1]
@@ -125,9 +124,9 @@ def calculate_throttle_action(speed):
 
 # Calculated based on how much distance was advanced since last state and current velocity
 def calculate_reward(prev_state, state):
+    vel = float(state[1])
     lap_dist_prev = float(prev_state[2])
     lap_dist_new = float(state[2])
-    vel = float(state[1])
     pl = float(state[3])
 
     # Necessary because of resetting and plugin interaction
@@ -151,32 +150,32 @@ timeout_dist = 0
 
 
 def episode_finish(prev_state, state):
-    cond_timeout = False
     global count
-    global timeout_dist
+    # global timeout_dist
     lap_dist_prev = float(prev_state[2])
     lap_dist_new = float(state[2])
     pl = float(state[3])
 
-    if count == 0:
-        timeout_dist = lap_dist_new
+    # if count == 0:
+    #     timeout_dist = lap_dist_new
 
     count += 1
 
     # print(f"Difference: {lap_dist_prev - lap_dist_new}\tPath Lateral: {pl}")
-    if count % ACTION_TIMEOUT_LIMIT == 0:
-        cond_timeout = abs(timeout_dist - lap_dist_new) < 30
-        timeout_dist = lap_dist_new
+    # if count % ACTION_TIMEOUT_LIMIT == 0:
+    #     cond_timeout = abs(timeout_dist - lap_dist_new) < 30
+    #     timeout_dist = lap_dist_new
 
-    cond_pl = abs(pl) >= 8.0
+    cond_pl = abs(pl) >= 8.0 and lap_dist_prev < lap_dist_new
     cond_start_pl = lap_dist_new < 200 and pl > 5.5
     cond_finish = lap_dist_prev > lap_dist_new and count > 800
 
-    done = (cond_pl or cond_start_pl or cond_timeout or cond_finish) and count > 20
-    if done:
+    done = (cond_pl or cond_start_pl or cond_finish)
+    red_light = calculate_throttle_action(convert_mps_to_kph(lap_dist_new)) > 0.8 and lap_dist_prev == lap_dist_new
+    if done and not red_light:
         print("PL: ", cond_pl)
         print("Start: ", cond_start_pl)
-        print("Timeout: ", cond_timeout)
+        # print("Timeout: ", cond_timeout)
         print("Finish: ", cond_finish)
         count = 0
 
@@ -201,13 +200,13 @@ def obtain_state():
 
     # Angle
     orientation = [float(telemetry_data[3]), float(telemetry_data[5])]
-    heading = calculate_heading(orientation[0], orientation[1])
+    heading = round(calculate_heading(orientation[0], orientation[1]), 2)
     # Velocity m/s
-    velocity = -float(telemetry_data[8])
+    velocity = -round(float(telemetry_data[8]), 2)
     # Lap Distance
-    lap_dist = float(vehicle_data[0])
+    lap_dist = round(float(vehicle_data[0]), 2)
     # Path Lateral - Distance to center of track
-    path_lateral = float(vehicle_data[1])
+    path_lateral = round(float(vehicle_data[1]), 2)
 
     # Compile information into state variable (Maybe turn into class/dict)
     state = np.array([heading, velocity, lap_dist, path_lateral])

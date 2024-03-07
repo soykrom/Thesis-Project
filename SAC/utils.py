@@ -31,8 +31,8 @@ def parse_args():
     parser.add_argument('--alpha', type=float, default=0.2, metavar='G',
                         help='Temperature parameter α determines the relative importance of the entropy\
                                 term against the reward (default: 0.2)')
-    parser.add_argument('--start_steps', type=int, default=10000, metavar='N',
-                        help='number of start steps (default: 40000)')
+    parser.add_argument('--start_steps', type=int, default=4e3, metavar='N',
+                        help='number of start steps (default: 4e3)')
     parser.add_argument('--epochs', type=int, default=250, metavar='N',
                         help='number of epochs (default: 250)')
     parser.add_argument('--batch_size', type=int, default=256, metavar='N',

@@ -31,15 +31,11 @@ class Agent(nn.Module):
     def save_models(self):
         print('.... saving models ....')
         self.actor.save_checkpoint()
-        self.value.save_checkpoint()
-        self.target_value.save_checkpoint()
         self.critic_1.save_checkpoint()
         self.critic_2.save_checkpoint()
 
     def load_models(self):
         print('.... loading models ....')
         self.actor.load_checkpoint()
-        self.value.load_checkpoint()
-        self.target_value.load_checkpoint()
         self.critic_1.load_checkpoint()
         self.critic_2.load_checkpoint()

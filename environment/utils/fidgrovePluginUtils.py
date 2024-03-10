@@ -15,8 +15,8 @@ vehicleScoringH = win32event.OpenEvent(win32event.EVENT_ALL_ACCESS, 0, "WriteVeh
 vehicleScoringMMfile = mmap.mmap(-1, length=20, tagname="MyFileVehicleScoring", access=mmap.ACCESS_READ)
 
 # CONSTANTS
-ACTION_TIMEOUT_LIMIT = 100
-CO_PL, CO_DIST, CO_VEL, CO_DONE = 0.8, 1.7, 0.8, 0.75  # Reward Coefficients default values
+ACTION_TIMEOUT_LIMIT = 50
+CO_DIST, CO_PL, CO_VEL, CO_DONE = 1.7, 0.4, 0.8, 0.75  # Reward Coefficients default values
 SPEED_LIMIT = 50  # Km/h
 
 # Normalization values
@@ -124,7 +124,7 @@ def calculate_throttle_action(speed):
 
 # Calculated based on how much distance was advanced since last state and current velocity
 def calculate_reward(prev_state, state):
-    vel = float(state[1])
+    # vel = float(state[1])
     lap_dist_prev = float(prev_state[2])
     lap_dist_new = float(state[2])
     pl = float(state[3])
@@ -132,13 +132,17 @@ def calculate_reward(prev_state, state):
     # Necessary because of resetting and plugin interaction
     if abs(lap_dist_new - lap_dist_prev) > 500:
         return 0
-    else:
-        penalty = 0
 
+    pl_reward = 1 / (1 + np.exp(-CO_PL * abs(pl))) if abs(pl) < 8 else -CO_PL * abs(pl)
     reward = CO_DIST * (lap_dist_new - lap_dist_prev) + \
-             CO_VEL * vel - \
-             CO_PL * abs(pl) - \
-             CO_DONE * penalty
+             pl_reward
+
+    if (lap_dist_new - lap_dist_prev) < 0 or lap_dist_prev < 0:
+        print(lap_dist_prev)
+
+    reward = -abs(pl) if abs(lap_dist_new - lap_dist_prev) < 2 else reward
+    # CO_VEL * vel - \
+    # CO_DONE * penalty
 
     # print(f"Reward: {reward}")
 
@@ -147,35 +151,44 @@ def calculate_reward(prev_state, state):
 
 count = 0
 timeout_dist = 0
+start_dist = 0
+
+
+def set_start_dist(dist):
+    global start_dist
+    start_dist = dist
+
+
+def get_start_dist():
+    global start_dist
+    return start_dist
 
 
 def episode_finish(prev_state, state):
     global count
-    # global timeout_dist
+    global timeout_dist
     lap_dist_prev = float(prev_state[2])
     lap_dist_new = float(state[2])
     pl = float(state[3])
 
-    # if count == 0:
-    #     timeout_dist = lap_dist_new
+    if count == 0:
+        timeout_dist = get_start_dist()
 
     count += 1
+    cond_timeout = False
+    if count % ACTION_TIMEOUT_LIMIT == 0:
+        cond_timeout = lap_dist_new - timeout_dist < 10
+        timeout_dist = lap_dist_new
 
-    # print(f"Difference: {lap_dist_prev - lap_dist_new}\tPath Lateral: {pl}")
-    # if count % ACTION_TIMEOUT_LIMIT == 0:
-    #     cond_timeout = abs(timeout_dist - lap_dist_new) < 30
-    #     timeout_dist = lap_dist_new
-
-    cond_pl = abs(pl) >= 8.0 and lap_dist_prev < lap_dist_new
-    cond_start_pl = lap_dist_new < 200 and pl > 5.5
+    cond_pl = abs(pl) >= 15
+    # cond_start_pl = lap_dist_new < 200 and pl > 5.5
     cond_finish = lap_dist_prev > lap_dist_new and count > 800
 
-    done = (cond_pl or cond_start_pl or cond_finish)
-    red_light = calculate_throttle_action(convert_mps_to_kph(lap_dist_new)) > 0.8 and lap_dist_prev == lap_dist_new
-    if done and not red_light:
+    done = (cond_pl or cond_finish or cond_timeout)
+    if done:
         print("PL: ", cond_pl)
-        print("Start: ", cond_start_pl)
-        # print("Timeout: ", cond_timeout)
+        # print("Start: ", cond_start_pl)
+        print("Timeout: ", cond_timeout)
         print("Finish: ", cond_finish)
         count = 0
 

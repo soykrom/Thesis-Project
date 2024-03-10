@@ -28,9 +28,9 @@ def parse_args():
                         help='target smoothing coefficient(τ) (default: 0.005)')
     parser.add_argument('--lr', type=float, default=0.001, metavar='G',
                         help='learning rate (default: 0.001)')
-    parser.add_argument('--alpha', type=float, default=0.2, metavar='G',
+    parser.add_argument('--alpha', type=float, default=0.1, metavar='G',
                         help='Temperature parameter α determines the relative importance of the entropy\
-                                term against the reward (default: 0.2)')
+                                term against the reward (default: 0.1)')
     parser.add_argument('--start_steps', type=int, default=4e3, metavar='N',
                         help='number of start steps (default: 4e3)')
     parser.add_argument('--epochs', type=int, default=250, metavar='N',

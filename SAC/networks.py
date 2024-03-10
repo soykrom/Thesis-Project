@@ -101,7 +101,6 @@ class ActorNetwork(nn.Module):
             actions = probabilities.sample()
 
         if with_logprob:
-            print("LOGPROB")
             log_probs = probabilities.log_prob(actions).sum(axis=-1)
             log_probs -= (2 * (np.log(2) - actions - F.softplus(-2 * actions))).sum(axis=1)
         else:

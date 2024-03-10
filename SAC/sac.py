@@ -12,10 +12,10 @@ from environment.rFactor2Environment import RFactor2Environment
 import environment.utils.fidgrovePluginUtils as utils
 
 
-def sac(seed=0, skip_initial=False,
-        alpha=0.2, gamma=0.99, tau=0.995, lr=1e-3,
-        replay_size=1e6, batch_size=1024, update_after=2e3, update_every=25,
-        steps_per_epoch=2000, epochs=100, max_ep_len=10000, start_steps=4e3):
+def sac(seed=0, skip_initial=False, load_models=False,
+        alpha=0.1, gamma=0.99, tau=0.995, lr=1e-3,
+        replay_size=1e6, batch_size=1024, update_after=2e3, update_every=50,
+        steps_per_epoch=2000, epochs=100, max_ep_len=2000, start_steps=4e3):
 
     # ============================ INITIAL SETUP ============================
     torch.manual_seed(seed)
@@ -36,7 +36,10 @@ def sac(seed=0, skip_initial=False,
     replay_size = replay_size
     replay_buffer = ReplayBuffer(input_shape=obs_dim[0], n_actions=act_dim, max_size=replay_size)
 
-    # Set up optimizers for policy and q-function
+    # Set up alpha for automatic gradient-based tuning method
+    alpha = torch.tensor(alpha, requires_grad=True)
+    alpha_optimizer = torch.optim.Adam([alpha], lr=lr)
+    # Set up optimizers for policy, q-function and alpha
     pi_optimizer = Adam(agent.actor.parameters(), lr=lr)
     # List of parameters for both Q-networks (save this for convenience)
     q_params = itertools.chain(agent.critic_1.parameters(), agent.critic_2.parameters())
@@ -74,6 +77,12 @@ def sac(seed=0, skip_initial=False,
 
         return loss_pi
 
+    def compute_loss_alpha(data):
+        actions, log_probs = agent.actor.sample_normal(data['state'])
+        entropy = -log_probs.mean()
+        loss_alpha = (-alpha * (log_probs + entropy).detach()).mean()
+        return loss_alpha
+
     # ============================ UPDATE ============================
     def learn():
         # Obtain batch data
@@ -95,6 +104,12 @@ def sac(seed=0, skip_initial=False,
         loss_pi.backward()
         pi_optimizer.step()
 
+        # Update temperature parameter alpha
+        alpha_optimizer.zero_grad()
+        loss_alpha = compute_loss_alpha(data)
+        loss_alpha.backward()
+        alpha_optimizer.step()
+
         # Unfreeze Q-networks as to optimize them
         for p_update in q_params:
             p_update.requires_grad = True
@@ -108,28 +123,34 @@ def sac(seed=0, skip_initial=False,
                 p_targ.data.add_((1 - tau) * p_update.data)
 
     # ============================ MAIN LOOP ============================
-
     # Reset as preparation for environment interation
     obs, ep_reward, ep_len = env.reset(), 0, 0
+    utils.set_start_dist(obs[2])
     best_reward = 0
 
     score_history = []
 
-    # if skip_initial:
-    #     agent.load_models()
-    #     agent_targ.load_models()
+    if load_models:
+        agent.load_models()
+        agent_targ.load_models()
 
     # Main loop
     step_count = 0
     while step_count < total_steps:
         if step_count < start_steps and not skip_initial:
             action = env.action_space.sample()
-        else:
+        elif step_count > start_steps:
             action = agent.choose_action(obs)
+        else:
+            print("THE TIME OF RANDOM ACTIONS HAS COME TO AN END")
+            print("THE TIME FOR POLICY SAMPLING BEGINS")
+
+            step_count += 1
+            continue
 
         # Environment step
         obs_, reward, done, _, _ = env.step(action)
-        if utils.calculate_throttle_action(utils.convert_mps_to_kph(obs_[0])) > 0.8 and obs[0] == obs_[0]:
+        if utils.calculate_throttle_action(utils.convert_mps_to_kph(obs_[0])) > 0.8 and abs(obs_[2] - utils.get_start_dist()) < 10:
             # Ignore step while at red light
             continue
 
@@ -143,7 +164,7 @@ def sac(seed=0, skip_initial=False,
         # Update most recent observation
         obs = obs_
 
-        if done:
+        if done or (ep_len == max_ep_len):
             obs, ep_reward, ep_len = env.reset(), 0, 0
 
         # Handling Agent Learning
@@ -152,11 +173,8 @@ def sac(seed=0, skip_initial=False,
                 learn()
 
         score_history.append(ep_reward)
-        avg_score = np.mean(score_history[-100:])
         if ep_reward > best_reward:
             best_reward = ep_reward
-
-        if avg_score > best_reward:
             agent.save_models()
             agent_targ.save_models()
 

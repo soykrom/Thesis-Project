@@ -98,7 +98,7 @@ class ActorNetwork(nn.Module):
         if reparameterize:
             actions = probabilities.rsample()
         else:
-            actions = probabilities.sample()
+            actions = mu
 
         if with_logprob:
             log_probs = probabilities.log_prob(actions).sum(axis=-1)

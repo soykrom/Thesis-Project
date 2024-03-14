@@ -9,15 +9,19 @@ from SAC.utils import plot_learning_curve
 from agent import Agent
 from buffer import ReplayBuffer
 from environment.rFactor2Environment import RFactor2Environment
-import environment.utils.fidgrovePluginUtils as utils
+
+global tests
 
 
 def sac(seed=0, skip_initial=False, load_models=False,
         alpha=0.1, gamma=0.99, tau=0.995, lr=1e-3,
-        replay_size=1e6, batch_size=1024, update_after=2e3, update_every=50,
-        steps_per_epoch=2000, epochs=100, max_ep_len=2000, start_steps=4e3):
+        replay_size=1e6, batch_size=1024, update_after=2e3, update_every=25,
+        steps_per_epoch=2000, epochs=100, max_ep_len=2000, start_steps=2e3):
 
     # ============================ INITIAL SETUP ============================
+    global tests
+    tests = 0
+
     torch.manual_seed(seed)
     np.random.seed(seed)
 
@@ -122,10 +126,30 @@ def sac(seed=0, skip_initial=False, load_models=False,
                 p_targ.data.mul_(tau)
                 p_targ.data.add_((1 - tau) * p_update.data)
 
+    # ============================ TEST ============================
+    def test_agent():
+        print("TESTING")
+        global tests
+
+        for j_test in range(3):
+            tests += 1
+            max_y = 0
+            o_test, d_test, ep_ret_test, ep_len_test = env.reset(), False, 0, 0
+            while not (d_test or (ep_len_test == max_ep_len)):
+                # Take deterministic actions at test time
+                o_test, r_test, d_test, _, _ = env.step(agent.choose_action(o_test, reparameterize=False))
+                ep_ret_test += r_test
+                ep_len_test += 1
+
+                if abs(o_test[0]) > max_y:
+                    print(f"Action: {action}\tY: {max_y}\tReward: {reward}")
+                    max_y = abs(o_test[0])
+                    with open("max_y.txt", "a") as file:
+                        file.write(str([o_test[0], ep_len_test, tests]) + '\n')
+
     # ============================ MAIN LOOP ============================
     # Reset as preparation for environment interation
     obs, ep_reward, ep_len = env.reset(), 0, 0
-    utils.set_start_dist(obs[2])
     best_reward = 0
 
     score_history = []
@@ -136,8 +160,12 @@ def sac(seed=0, skip_initial=False, load_models=False,
 
     # Main loop
     step_count = 0
+    ep_count = 1
     while step_count < total_steps:
         if step_count < start_steps and not skip_initial:
+            if step_count == update_after:
+                print("BEGIN UPDATING")
+
             action = env.action_space.sample()
         elif step_count > start_steps:
             action = agent.choose_action(obs)
@@ -150,9 +178,6 @@ def sac(seed=0, skip_initial=False, load_models=False,
 
         # Environment step
         obs_, reward, done, _, _ = env.step(action)
-        if utils.calculate_throttle_action(utils.convert_mps_to_kph(obs_[0])) > 0.8 and abs(obs_[2] - utils.get_start_dist()) < 10:
-            # Ignore step while at red light
-            continue
 
         step_count += 1
         ep_reward += reward
@@ -165,18 +190,25 @@ def sac(seed=0, skip_initial=False, load_models=False,
         obs = obs_
 
         if done or (ep_len == max_ep_len):
+            score_history.append(ep_reward)
+            print("Episode Reward: ", ep_reward)
+            if ep_reward > best_reward:
+                best_reward = ep_reward
+                print("Best Reward: ", best_reward)
+                agent.save_models()
+                agent_targ.save_models()
+
+            if ep_count % update_every == 0:
+                test_agent()
+
+                print("Testing Done")
+
             obs, ep_reward, ep_len = env.reset(), 0, 0
+            ep_count += 1
 
         # Handling Agent Learning
-        if step_count >= update_after and step_count % update_every == 0:
-            for i in range(update_every):
-                learn()
-
-        score_history.append(ep_reward)
-        if ep_reward > best_reward:
-            best_reward = ep_reward
-            agent.save_models()
-            agent_targ.save_models()
+        if step_count >= update_after:
+            learn()
 
     # Plot learning curve
     filename = 'inverted_pendulum.png'
@@ -185,34 +217,3 @@ def sac(seed=0, skip_initial=False, load_models=False,
 
     score = [i + 1 for i in range(len(score_history))]
     plot_learning_curve(score, score_history, figure_file, len(score_history))
-
-    # def process_transitions(actions_df, states_df):
-    #     print("Processing initial transitions")
-    #     timer = time.process_time()
-    #     actions = []
-    #     updates = 0
-    #
-    #     previous_states_df = states_df['Previous State'].apply(lambda x: x.strip('[]').split(','))
-    #     new_states_df = states_df['New State'].apply(lambda x: x.strip('[]').split(','))
-    #
-    #     for index, act in actions_df.iterrows():
-    #         act = np.array(action[0])
-    #
-    #         prev_state = np.array(previous_states_df[index], dtype=float)
-    #         new_state = np.array(new_states_df[index], dtype=float)
-    #
-    #         actions.append(action)
-    #
-    #         d = utils.episode_finish(prev_state, new_state)
-    #         r = utils.calculate_reward(prev_state, new_state)
-    #
-    #         replay_buffer.store_transition(prev_state, act, r, new_state, d)
-    #
-    #         # Update parameters of all the networks
-    #         learn()
-    #         updates += 1
-    #
-    #     elapsed_time = time.process_time() - timer
-    #     print(f"Initial inputs and parameter updates finished after {elapsed_time} seconds.")
-    #
-    #     return updates

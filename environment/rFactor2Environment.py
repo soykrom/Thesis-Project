@@ -1,77 +1,77 @@
-import time
+import math
 
 import gym
-from numpy import append
-import pyvjoy
+import numpy as np
 from gym import spaces
 
-import environment.utils.fidgrovePluginUtils as utils
-
-NEUTRAL_POSITION = 16384
+VELOCITY = 11  # m/s
+L = 2.25  # Distance between rear and front axel
 
 
 class RFactor2Environment(gym.Env):
     def __init__(self):
         # Steering and Acceleration
         self.action_space = spaces.Box(-1.0, 1.0, shape=(1,), dtype=float)
-        self.observation_space = spaces.Box(-1.0, 1.0, shape=(5,), dtype=float)
-        # Vjoy Device
-        self.vjoy_device = pyvjoy.VJoyDevice(1)
+        self.observation_space = spaces.Box(-1.0, 1.0, shape=(2,), dtype=float)
         # Previous state (for reward purposes)
-        self.prev_state = None
-        self.prev_steering = NEUTRAL_POSITION
+        self.current_steps = 0
+        self.position = [0.0, 0.0]
+        self.max_dist = 0
+        self.heading = 0.0
+        self.resets = 0
+
+        with open("max_dist.txt", "w") as file:
+            file.write(str([self.max_dist, self.resets]) + "\n")
+
+        with open("positions.txt", "w") as file:
+            file.write(str([self.position, self.heading, self.resets]) + "\n")
+
+        with open("max_y.txt", "w") as file:
+            file.write(str([self.max_dist, self.resets, 0]) + "\n")
 
     def reset(self, seed=None, options=None):
-        # Send resets command via VJoy
-        self.vjoy_device.set_button(1, 1)
-        print("RESET")
+        print(f"RESETING {self.resets}...\nFinal X: {self.position[0]}\tMax X: {self.max_dist}")
 
-        time.sleep(0.5)
-        # Turn reset button off
-        self.vjoy_device.set_button(1, 0)
+        self.current_steps = 0
+        self.heading = 0.0
+        self.position = [0.0, 0.0]
+        self.resets += 1
 
-        # Obtain observations related to reset
-        new_state = utils.obtain_state()
-        new_state = append(new_state, self.prev_steering)
-
-        self.prev_steering = NEUTRAL_POSITION
-        self.prev_state = new_state
-
-        self.vjoy_device.data.wAxisX = NEUTRAL_POSITION
-        self.vjoy_device.data.wAxisY = 0
-
-        self.vjoy_device.update()
-
-        time.sleep(9.0)
-
-        return new_state
+        return np.array([self.position[1], self.heading])
 
     def step(self, action):
+        self.current_steps += 1
 
-        self.vjoy_device.data.wAxisX = int(NEUTRAL_POSITION + (float(action) * NEUTRAL_POSITION))
+        self.heading += (VELOCITY / L) * math.tan(action * math.pi / 2)
+        self.heading = self.heading % (2 * math.pi)
 
-        throttle_action = utils.calculate_throttle_action(utils.convert_mps_to_kph(self.prev_state[1]))
-        self.vjoy_device.data.wAxisY = int(NEUTRAL_POSITION + (throttle_action * NEUTRAL_POSITION))
+        new_x = VELOCITY / 10 * math.cos(self.heading)
+        new_y = VELOCITY / 10 * math.sin(self.heading)
+        self.position[0] += new_x
+        self.position[1] += new_y
 
-        self.vjoy_device.update()
+        if self.position[0] > self.max_dist:
+            self.max_dist = self.position[0]
+            print("NEW MAX DISTANCE: ", self.max_dist)
+            print("Path Lateral: ", self.position[1])
 
-        # Obtain in-game data (after action execution, it waits until the info is received)
-        new_state = utils.obtain_state()
+            with open("max_dist.txt", "a") as file:
+                file.write(str([self.max_dist, self.resets]) + '\n')
 
-        new_state = append(new_state, self.prev_steering)
-        self.prev_steering = self.vjoy_device.data.wAxisX
+        done = abs(self.position[1]) > 10 or self.position[0] > 1000
 
-        if self.prev_state is None:
-            self.prev_state = new_state
+        if self.position[1] == 0:
+            reward = 10
+        else:
+            reward = np.clip(1 / (0.4 * abs(self.position[1])), 0, 10) \
+                if abs(self.position[1]) < 4 \
+                else -abs(self.position[1])
 
-        done = utils.episode_finish(self.prev_state, new_state)
-        reward = utils.calculate_reward(self.prev_state, new_state)
+        if new_x < 0:
+            reward -= abs(self.position[0])
+            done = True
 
-        self.prev_state = new_state
+        with open("positions.txt", "a") as file:
+            file.write(str([self.position, action, done, reward, self.resets]) + '\n')
 
-        utils.reset_events()
-
-        return new_state, reward, done, False, dict()
-
-
-# gym.register(id='RFactor2-v0', entry_point='rFactor2Environment:RFactor2Environment')
+        return np.array([self.position[1], self.heading]), reward, done, False, dict()

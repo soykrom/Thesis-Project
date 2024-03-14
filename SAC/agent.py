@@ -19,9 +19,9 @@ class Agent(nn.Module):
         self.critic_2 = CriticNetwork(lr, input_dims, n_actions=n_actions,
                                       name='critic_2')
 
-    def choose_action(self, observation):
+    def choose_action(self, observation, reparameterize=True):
         actions, _ = self.actor.sample_normal(T.as_tensor(observation, dtype=T.float32),
-                                              reparameterize=True, with_logprob=False)
+                                              reparameterize=reparameterize, with_logprob=False)
 
         return actions.cpu().detach().numpy()[0]
 

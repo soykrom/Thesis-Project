@@ -47,6 +47,7 @@ def parse_args():
     parser.add_argument('--states_file', default=os.path.abspath('environment/common/transitions.csv'),
                         help='file name with state transitions of initial inputs')
     parser.add_argument('--skip_initial', type=bool, default=False, help='skip initial transitions training')
+    parser.add_argument('--load_models', type=bool, default=False, help='load agent models')
     parser.add_argument('--training_file', default=os.path.abspath('environment/common/initial_training.pkl'),
                         help='file name with training inputs')
     parser.add_argument('--coefficients', nargs=3, type=float, default=None, help='to be used coefficients')

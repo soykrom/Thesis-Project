@@ -15,8 +15,8 @@ global tests
 
 def sac(seed=0, skip_initial=False, load_models=False,
         alpha=0.1, gamma=0.99, tau=0.995, lr=1e-3,
-        replay_size=1e6, batch_size=1024, update_after=2e3, update_every=25,
-        steps_per_epoch=2000, epochs=100, max_ep_len=2000, start_steps=2e3):
+        replay_size=1e6, batch_size=4096, update_after=4e3, update_every=25,
+        steps_per_epoch=2000, epochs=100, max_ep_len=2000, start_steps=4e3):
 
     # ============================ INITIAL SETUP ============================
     global tests
@@ -62,13 +62,13 @@ def sac(seed=0, skip_initial=False, load_models=False,
             q1_target = agent_targ.critic_1(data['state'], actions)
             q2_target = agent_targ.critic_2(data['state'], actions)
             q_target = torch.min(q1_target, q2_target)
-            backup = data['reward'] + gamma * (1 - data['done']) * (q_target - alpha * log_probs)
+            target = data['reward'] + gamma * (1 - data['done']) * (q_target - alpha * log_probs)
 
-        loss_q1 = ((q1 - backup) ** 2).mean()
-        loss_q2 = ((q2 - backup) ** 2).mean()
+        loss_q1 = ((q1 - target) ** 2).mean()
+        loss_q2 = ((q2 - target) ** 2).mean()
         loss_q = loss_q1 + loss_q2
 
-        return loss_q
+        return loss_q / 2
 
     def compute_loss_pi(data):
         actions, log_probs = agent.actor.sample_normal(data['state'])
@@ -84,7 +84,7 @@ def sac(seed=0, skip_initial=False, load_models=False,
     def compute_loss_alpha(data):
         actions, log_probs = agent.actor.sample_normal(data['state'])
         entropy = -log_probs.mean()
-        loss_alpha = (-alpha * (log_probs + entropy).detach()).mean()
+        loss_alpha = (-alpha * (log_probs + entropy)).mean()
         return loss_alpha
 
     # ============================ UPDATE ============================
@@ -131,21 +131,27 @@ def sac(seed=0, skip_initial=False, load_models=False,
         print("TESTING")
         global tests
 
-        for j_test in range(3):
-            tests += 1
-            max_y = 0
-            o_test, d_test, ep_ret_test, ep_len_test = env.reset(), False, 0, 0
-            while not (d_test or (ep_len_test == max_ep_len)):
-                # Take deterministic actions at test time
-                o_test, r_test, d_test, _, _ = env.step(agent.choose_action(o_test, reparameterize=False))
-                ep_ret_test += r_test
-                ep_len_test += 1
+        tests += 1
+        max_y = 0
+        o_test, d_test, ep_ret_test, ep_len_test = env.reset(), False, 0, 0
+        while not (d_test or (ep_len_test == max_ep_len)):
+            # Take deterministic actions at test time
+            a_test = agent.choose_action(o_test, reparameterize=False)
+            o_test, r_test, d_test, _, _ = env.step(np.round(a_test, 2))
+            ep_ret_test += r_test
+            ep_len_test += 1
+            print(f"Action: {np.round(a_test, 2)}\tY: {max_y}\tReward: {r_test}")
 
-                if abs(o_test[0]) > max_y:
-                    print(f"Action: {action}\tY: {max_y}\tReward: {reward}")
-                    max_y = abs(o_test[0])
-                    with open("max_y.txt", "a") as file:
-                        file.write(str([o_test[0], ep_len_test, tests]) + '\n')
+            if abs(o_test[0]) > max_y:
+                # print(f"Action: {np.round(a_test, 2)}\tY: {max_y}\tReward: {r_test}")
+                max_y = abs(o_test[0])
+
+        if abs(o_test[0]) < 2 and d_test:
+            agent.save_models()
+            agent_targ.save_models()
+
+        with open("tests.txt", "a") as file:
+            file.write(str([o_test[0], ep_ret_test, ep_len_test, tests]) + '\n')
 
     # ============================ MAIN LOOP ============================
     # Reset as preparation for environment interation
@@ -157,6 +163,8 @@ def sac(seed=0, skip_initial=False, load_models=False,
     if load_models:
         agent.load_models()
         agent_targ.load_models()
+
+        test_agent()
 
     # Main loop
     step_count = 0
@@ -177,7 +185,7 @@ def sac(seed=0, skip_initial=False, load_models=False,
             continue
 
         # Environment step
-        obs_, reward, done, _, _ = env.step(action)
+        obs_, reward, done, _, _ = env.step(np.round(action, 2))
 
         step_count += 1
         ep_reward += reward
@@ -208,7 +216,10 @@ def sac(seed=0, skip_initial=False, load_models=False,
 
         # Handling Agent Learning
         if step_count >= update_after:
-            learn()
+            for j in range(update_every // 5):
+                learn()
+
+    test_agent()
 
     # Plot learning curve
     filename = 'inverted_pendulum.png'

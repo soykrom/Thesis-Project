@@ -6,7 +6,7 @@ from gym import spaces
 
 VELOCITY = 11  # m/s
 L = 2.25  # Distance between rear and front axel
-
+TIME_DIVISION = 10  # Each timestep represents 1/10th of a second
 
 class RFactor2Environment(gym.Env):
     def __init__(self):
@@ -16,23 +16,27 @@ class RFactor2Environment(gym.Env):
         # Previous state (for reward purposes)
         self.current_steps = 0
         self.position = [0.0, 0.0]
-        self.max_dist = 0
+        self.ep_max_dist = 0
+        self.ep_max_pl = 0
         self.heading = 0.0
         self.resets = 0
 
-        with open("max_dist.txt", "w") as file:
-            file.write(str([self.max_dist, self.resets]) + "\n")
+        with open("ep_max_dist.txt", "w") as file:
+            file.write(str([self.ep_max_dist, self.resets]) + "\n")
 
         with open("positions.txt", "w") as file:
             file.write(str([self.position, self.heading, self.resets]) + "\n")
 
-        with open("max_y.txt", "w") as file:
-            file.write(str([self.max_dist, self.resets, 0]) + "\n")
+        with open("tests.txt", "w") as file:
+            file.write(str([self.ep_max_dist, self.resets, 0]) + "\n")
 
     def reset(self, seed=None, options=None):
-        print(f"RESETING {self.resets}...\nFinal X: {self.position[0]}\tMax X: {self.max_dist}")
+        print(f"RESETING {self.resets}...\nFinal X: {round(self.position[0], 2)}\tMax X: {round(self.ep_max_dist, 2)}"
+              f"\nFinal Y: {round(self.position[1], 2)}\tMax Y: {round(self.ep_max_pl, 2)}")
 
         self.current_steps = 0
+        self.ep_max_dist = 0
+        self.ep_max_pl = 0
         self.heading = 0.0
         self.position = [0.0, 0.0]
         self.resets += 1
@@ -42,34 +46,27 @@ class RFactor2Environment(gym.Env):
     def step(self, action):
         self.current_steps += 1
 
-        self.heading += (VELOCITY / L) * math.tan(action * math.pi / 2)
-        self.heading = self.heading % (2 * math.pi)
+        self.heading += (VELOCITY / (TIME_DIVISION * L)) * math.tan(action * math.pi / 2)
+        self.heading = round(self.heading % (2 * math.pi), 2)
 
-        new_x = VELOCITY / 10 * math.cos(self.heading)
-        new_y = VELOCITY / 10 * math.sin(self.heading)
-        self.position[0] += new_x
-        self.position[1] += new_y
+        new_x = VELOCITY / TIME_DIVISION * math.cos(self.heading)
+        new_y = VELOCITY / TIME_DIVISION * math.sin(self.heading)
+        self.position[0] += round(new_x, 2)
+        self.position[1] += round(new_y, 2)
 
-        if self.position[0] > self.max_dist:
-            self.max_dist = self.position[0]
-            print("NEW MAX DISTANCE: ", self.max_dist)
-            print("Path Lateral: ", self.position[1])
+        if abs(self.position[1]) > self.ep_max_pl:
+            self.ep_max_pl = self.position[1]
 
-            with open("max_dist.txt", "a") as file:
-                file.write(str([self.max_dist, self.resets]) + '\n')
+        if self.position[0] > self.ep_max_dist:
+            self.ep_max_dist = self.position[0]
 
-        done = abs(self.position[1]) > 10 or self.position[0] > 1000
+            with open("ep_max_dist.txt", "a") as file:
+                file.write(str([self.ep_max_dist, self.resets]) + '\n')
 
-        if self.position[1] == 0:
-            reward = 10
-        else:
-            reward = np.clip(1 / (0.4 * abs(self.position[1])), 0, 10) \
-                if abs(self.position[1]) < 4 \
-                else -abs(self.position[1])
+        done = abs(self.position[1]) > 10 or self.position[0] > 1000 or self.position[0] < self.ep_max_dist - 10
 
-        if new_x < 0:
-            reward -= abs(self.position[0])
-            done = True
+        reward = -abs(self.position[1])
+        reward = round((reward + new_x) / 4, 2)
 
         with open("positions.txt", "a") as file:
             file.write(str([self.position, action, done, reward, self.resets]) + '\n')

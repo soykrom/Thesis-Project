@@ -1,49 +1,40 @@
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import CubicSpline
 
 
-def get_indexes(lst, value):
-    return [index for index, element in enumerate(lst) if element == value]
+def generate_trajectory(key_points):
+    key_points = np.array(key_points)
+    num_points = len(key_points)
+
+    # Append the first key point to the end to satisfy periodic boundary condition
+    key_points = np.vstack([key_points, key_points[0]])
+
+    # Generate cubic spline interpolation
+    t = np.linspace(0, 1, num_points + 1)  # Adjust the number of points for the appended key point
+    cs = CubicSpline(t, key_points, bc_type='periodic')
+
+    # Generate smooth trajectory
+    num_samples = 1000  # Adjust the number of samples for smoother trajectory
+    t_smooth = np.linspace(0, 1, num_samples)
+    trajectory = cs(t_smooth)
+
+    return trajectory
 
 
-# Function to load data from the file
-def load_data(filename):
-    rewards = []
-    resets = []
+# Example key points
+key_points = [[0, -10], [500, 40], [490, 500], [-490, 500], [-490, 40]]
 
-    try:
-        with open(filename, "r") as file:
-            for line in file:
-                reward, reset = map(float, line.strip()[1:-1].split(',')[-2:])
-                rewards.append(reward)
-                resets.append(reset)
-        return rewards, resets
-    except FileNotFoundError:
-        print("File not found:", filename)
-        return [], []
+# Generate trajectory
+trajectory = generate_trajectory(key_points)
 
-
-# Load data from the file
-rewards, resets = load_data("positions.txt")
-indexes = get_indexes(resets, 586)
-print(indexes)
-print(rewards[indexes[len(indexes) - 1]])
-
-rewards = [rewards[index] for index in indexes]
-
-results = []
-reward_sum = 0
-for i in range(len(rewards)):
-    results.append([i, rewards[i]])
-    reward_sum += rewards[i]
-
-print(reward_sum)
-x_values = [result[0] for result in results]
-y_values = [result[1] for result in results]
-# Plotting
-plt.scatter(x_values, y_values, color='blue', alpha=0.5)
-plt.xlabel('Tests')
-plt.ylabel('Max Distance')
-plt.title('Max Distance vs Resets')
+# Plot trajectory
+plt.plot(trajectory[:, 0], trajectory[:, 1], label='Trajectory')
+plt.scatter(np.array(key_points)[:, 0], np.array(key_points)[:, 1], color='red', label='Key Points')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Generated Trajectory')
+plt.legend()
 plt.grid(True)
+plt.axis('equal')
 plt.show()

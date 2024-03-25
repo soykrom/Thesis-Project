@@ -132,7 +132,7 @@ def sac(seed=0, skip_initial=False, load_models=False,
         global tests
 
         tests += 1
-        max_y = 0
+        max_pl = 0
         o_test, d_test, ep_ret_test, ep_len_test = env.reset(), False, 0, 0
         while not (d_test or (ep_len_test == max_ep_len)):
             # Take deterministic actions at test time
@@ -140,11 +140,12 @@ def sac(seed=0, skip_initial=False, load_models=False,
             o_test, r_test, d_test, _, _ = env.step(np.round(a_test, 2))
             ep_ret_test += r_test
             ep_len_test += 1
-            print(f"Action: {np.round(a_test, 2)}\tY: {max_y}\tReward: {r_test}")
+            print(f"Action: {round(a_test, 2)}\tPosition: [{round(o_test[0], 2)}, {round(o_test[1], 2)}]\n"
+                  f"Path Lateral: {max_pl}\tReward: {r_test}")
 
-            if abs(o_test[0]) > max_y:
+            if abs(o_test[2]) > max_pl:
                 # print(f"Action: {np.round(a_test, 2)}\tY: {max_y}\tReward: {r_test}")
-                max_y = abs(o_test[0])
+                max_pl = abs(o_test[2])
 
         if abs(o_test[0]) < 2 and d_test:
             agent.save_models()
@@ -206,7 +207,7 @@ def sac(seed=0, skip_initial=False, load_models=False,
                 agent.save_models()
                 agent_targ.save_models()
 
-            if ep_count % update_every == 0:
+            if ep_count % update_every == 0 and step_count > start_steps:
                 test_agent()
 
                 print("Testing Done")
